@@ -9,4 +9,6 @@ git add .
 git commit -m "Modification du projet"
 git push origin main
 
+<--- récupérer les dernières modifications du projet --->
+git pull origin main
 
