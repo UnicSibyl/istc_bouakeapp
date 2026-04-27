@@ -1,4 +1,8 @@
-Etape 1 :<--- accerder au projet depuis le terminal bash --->
+Etape 1 :<--- accerder au projet depuis le terminal bash ---> 
+
+ctlr + shift + p
+
+ou
 
 $ git clone https://github.com/UnicSibyl/istc_bouakeapp.git
 cd istc_bouakeapp
