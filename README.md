@@ -1,18 +1,19 @@
-# istc_bouakeapp
+<--- accerder au projet depuis le terminal bash --->
+git clone https://github.com/Juniorkone225/projet_pp.git
+cd projet_pp
+code .
 
-A new Flutter project.
+<--- actualiser les fichier du projet --->
+git pull origin main
 
-## Getting Started
+<--- apres chaque modif executer cette commande pour mettre à jour le prjet en ligne --->
 
-This project is a starting point for a Flutter application.
+git pull
+git add .
+git commit -m "modification"
+git push
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# istc_bouakeapp
+git add lib/main.dart
+git commit -m "sauvegarde avant pull"
