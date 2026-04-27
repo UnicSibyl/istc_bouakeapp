@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
-  // Liste des pages dans l'ordre du menu bonjour monsieur xxjfgfjlg
+  // Liste des pages dans l'ordre du menu bonjour monsieur Okoi
   final List<Widget> _pages = [
     const AccueilPage(),
     const DecouvrirPage(), // Ajouté ici
