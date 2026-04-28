@@ -55,45 +55,26 @@ class _AccueilPageState extends State<AccueilPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. TEXTE BIENVENUE
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
-                child: Center(
-                  child: Text(
-                    "Bienvenue sur l'application mobile de l'antenne ISTC Polytechnique de Bouaké",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF0D1B2A),
-                    ),
-                  ),
-                ),
-              ),
-
-              // 2. BARRE DE RECHERCHE
+              // 1. HEADER
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 10,
-                ),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F3F5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
+                child: Center(
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.search, color: Colors.grey, size: 22),
-                      const SizedBox(width: 10),
-                      const Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: "Rechercher",
-                            border: InputBorder.none,
-                          ),
+                      const Icon(
+                        Icons.home,
+                        color: Color(0xFF1565C0),
+                        size: 22,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        "Accueil",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Syne',
+                          color: Color(0xFF0D1B2A),
                         ),
                       ),
                     ],
@@ -101,58 +82,96 @@ class _AccueilPageState extends State<AccueilPage> {
                 ),
               ),
 
-              const SizedBox(height: 10),
+              // 2. BIENVENUE
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FA),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: const Text(
+                    "Bienvenue sur l'application mobile de l'antenne ISTC Polytechnique de Bouaké",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF1565C0),
+                    ),
+                  ),
+                ),
+              ),
 
-              // 3. SLIDER AVEC BOUTON DÉCOUVRIR SUPERPOSÉ
+              // 3. SLIDER AVEC BLEU ACCENTUÉ
               SizedBox(
-                height: 200,
+                height: 220,
                 child: PageView.builder(
                   controller: _pageController,
                   itemCount: images.length,
                   onPageChanged: (int page) =>
                       setState(() => _currentPage = page),
                   itemBuilder: (context, index) {
-                    return Stack(
-                      children: [
-                        // L'image du slide
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            image: DecorationImage(
-                              image: AssetImage(images[index]),
-                              fit: BoxFit.cover,
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Stack(
+                          children: [
+                            // Image avec filtre bleu pour "sentir" l'opacité
+                            ColorFiltered(
+                              colorFilter: ColorFilter.mode(
+                                const Color(0xFF1565C0).withOpacity(0.3),
+                                BlendMode.darken,
+                              ),
+                              child: Image.asset(
+                                images[index],
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
                             ),
-                          ),
+                            // Dégradé pour accentuer le bleu sur le slider
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    const Color(0xFF1565C0).withOpacity(0.4),
+                                    const Color(
+                                      0xFF1565C0,
+                                    ).withOpacity(0.7), // Bleu plus fort
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 20,
+                              left: 20,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFF1565C0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Découvrir",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        // Le bouton "Découvrir" superposé sur l'image
-                        Positioned(
-                          bottom: 20,
-                          left: 25,
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                              elevation: 4,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15,
-                                vertical: 8,
-                              ),
-                            ),
-                            child: const Text(
-                              "Découvrir",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     );
                   },
                 ),
@@ -160,11 +179,11 @@ class _AccueilPageState extends State<AccueilPage> {
 
               const SizedBox(height: 25),
 
-              // 4. ZONE BASSE ORANGE (Formations et News)
+              // 4. ZONE NOS FORMATIONS
               Container(
                 width: double.infinity,
                 decoration: const BoxDecoration(
-                  color: Colors.orangeAccent,
+                  color: Color(0xFFF8F9FA),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -181,7 +200,6 @@ class _AccueilPageState extends State<AccueilPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -190,16 +208,20 @@ class _AccueilPageState extends State<AccueilPage> {
                       child: Row(
                         children: [
                           _buildFormationCard(
-                            "Arts et Images Numériques",
-                            'assets/icons/graphic.png',
+                            "Arts & Images\nNumériques",
+                            "licence & master",
+                            Icons.palette,
                           ),
                           _buildFormationCard(
-                            "Publicité Marketing",
-                            'assets/icons/marketing.png',
+                            "Publicité\nMarketing",
+                            "licence & master",
+                            Icons.campaign,
                           ),
                         ],
                       ),
                     ),
+
+                    // 5. NEWS & ÉVÉNEMENTS (STYLE MAQUETTE)
                     const Padding(
                       padding: EdgeInsets.fromLTRB(20, 30, 20, 15),
                       child: Text(
@@ -207,42 +229,19 @@ class _AccueilPageState extends State<AccueilPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
                         ),
                       ),
                     ),
                     _buildNewsCard(
                       "Workshop UI/UX Design",
-                      "15 Avril 2026",
-                      'assets/icons/news1.png',
+                      "Formation intensive",
+                      "13 fev. 2026 . Amphi",
                     ),
                     _buildNewsCard(
-                      "Conférence Métiers du Web",
-                      "22 Avril 2026",
-                      'assets/icons/news2.png',
+                      "Conférence Web",
+                      "Séminaire tech",
+                      "20 fev. 2026 . Salle 4",
                     ),
-
-                    if (_voirTout) ...[
-                      _buildNewsCard(
-                        "JPO ISTC Bouaké",
-                        "05 Mai 2026",
-                        'assets/icons/news1.png',
-                      ),
-                    ],
-
-                    Center(
-                      child: TextButton(
-                        onPressed: () => setState(() => _voirTout = !_voirTout),
-                        child: Text(
-                          _voirTout ? "Voir moins" : "Voir plus",
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
                   ],
                 ),
               ),
@@ -253,34 +252,35 @@ class _AccueilPageState extends State<AccueilPage> {
     );
   }
 
-  // Widget pour les cartes de formation (Design blanc sur fond orange)
-  Widget _buildFormationCard(String title, String iconPath) {
+  Widget _buildFormationCard(String title, String subtitle, IconData icon) {
     return Expanded(
       child: Container(
         margin: const EdgeInsets.all(8),
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          ],
         ),
         child: Column(
           children: [
-            Image.asset(
-              iconPath,
-              width: 40,
-              height: 40,
-              errorBuilder: (c, e, s) =>
-                  const Icon(Icons.school, size: 40, color: Colors.orange),
-            ),
-            const SizedBox(height: 12),
+            Icon(icon, size: 35, color: const Color(0xFF1565C0)),
+            const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
+                fontWeight: FontWeight.w800,
+                height: 1.2,
               ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
             ),
           ],
         ),
@@ -288,31 +288,25 @@ class _AccueilPageState extends State<AccueilPage> {
     );
   }
 
-  // Widget pour les news
-  Widget _buildNewsCard(String title, String date, String iconPath) {
+  Widget _buildNewsCard(String title, String category, String details) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade100),
       ),
       child: Row(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.asset(
-              iconPath,
-              width: 50,
-              height: 50,
-              fit: BoxFit.cover,
-              errorBuilder: (c, e, s) => Container(
-                color: Colors.grey[200],
-                width: 50,
-                height: 50,
-                child: const Icon(Icons.event),
-              ),
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.blue.shade50,
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: const Icon(Icons.event_note, color: Color(0xFF1565C0)),
           ),
           const SizedBox(width: 15),
           Expanded(
@@ -322,14 +316,24 @@ class _AccueilPageState extends State<AccueilPage> {
                 Text(
                   title,
                   style: const TextStyle(
+                    color: Color(0xFF1565C0),
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
+                const SizedBox(height: 2),
+                Text(
+                  category,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
-                  date,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                  details,
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
                 ),
               ],
             ),
