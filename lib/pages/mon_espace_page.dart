@@ -15,6 +15,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
   // --- COULEURS DU DESIGN ---
   final Color _primaryBlue = const Color(0xFF1557B0);
   final Color _darkGreen = const Color(0xFF2E7D32);
+  final Color _istcViolet = const Color(0xFF1557B0); // Votre violet
   final Color _bgLightBlue = const Color(0xFFEFF6FF);
   final Color _borderBlue = const Color(0xFF90CDF4);
   final Color _infoYellow = const Color(0xFFFFF9E6);
@@ -22,7 +23,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Navigation conditionnelle
+    // Navigation conditionnelle selon l'état
     if (role == null) return _buildRoleSelection();
     if (!isLogged) return _buildLogin();
     return _buildStudentSpace();
@@ -32,16 +33,16 @@ class _MonEspacePageState extends State<MonEspacePage> {
   Widget _buildRoleSelection() {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _customAppBar("CONNEXION"),
+      appBar: _customAppBar("MON ESPACE"), // Utilisation de la fonction propre
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             const Icon(Icons.school, size: 80, color: Color(0xFFFFB74D)),
             const SizedBox(height: 24),
             const Text(
-              "Mon Espace",
+              "Bienvenue",
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -70,7 +71,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
             const SizedBox(height: 40),
             _largeButton("Continuer →", () {
               if (role != null) {
-                setState(() {}); // Rafraîchit pour passer à l'écran login
+                setState(() {});
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -89,7 +90,10 @@ class _MonEspacePageState extends State<MonEspacePage> {
   Widget _buildLogin() {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _customAppBar("LOGIN", onBack: () => setState(() => role = null)),
+      appBar: _customAppBar(
+        "CONNEXION",
+        onBack: () => setState(() => role = null),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -97,7 +101,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 40),
               decoration: BoxDecoration(
-                color: _primaryBlue,
+                color: _istcViolet, // Passage au violet pour la cohérence
                 borderRadius: const BorderRadius.vertical(
                   bottom: Radius.circular(30),
                 ),
@@ -135,20 +139,14 @@ class _MonEspacePageState extends State<MonEspacePage> {
                 children: [
                   const Text(
                     "Identifiant",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A5568),
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   _customTextField("ex : istc-bke-0042", false),
                   const SizedBox(height: 20),
                   const Text(
                     "Mot de passe",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A5568),
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   _customTextField("••••••••", true),
@@ -176,7 +174,6 @@ class _MonEspacePageState extends State<MonEspacePage> {
         backgroundColor: Colors.white,
         appBar: _customAppBar(
           "TABLEAU DE BORD",
-          color: _darkGreen,
           onBack: () => setState(() => isLogged = false),
         ),
         body: SingleChildScrollView(
@@ -194,34 +191,37 @@ class _MonEspacePageState extends State<MonEspacePage> {
     );
   }
 
-  // --- COMPOSANTS RÉUTILISABLES ---
+  // --- COMPOSANTS RÉUTILISABLES NETTOYÉS ---
 
-  PreferredSizeWidget _customAppBar(
-    String title, {
-    Color? color,
-    VoidCallback? onBack,
-  }) {
+  PreferredSizeWidget _customAppBar(String title, {VoidCallback? onBack}) {
     return AppBar(
       backgroundColor: Colors.white,
-      elevation: 0.5,
+      elevation: 0,
+      centerTitle: true,
       leading: onBack != null
           ? IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              icon: const Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 20,
+              ),
               onPressed: onBack,
             )
           : null,
       title: Text(
         title,
         style: TextStyle(
-          color: color ?? _primaryBlue,
-          fontSize: 14,
+          color: _istcViolet,
           fontWeight: FontWeight.bold,
           letterSpacing: 1.2,
+          fontSize: 16,
         ),
       ),
-      centerTitle: true,
     );
   }
+
+  // ... (Gardez vos autres méthodes _infoBox, _roleCard, etc. telles quelles) ...
+  // Mais assurez-vous qu'elles sont bien EN DEHORS des méthodes build.
 
   Widget _infoBox() {
     return Container(
@@ -269,7 +269,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
           children: [
             Icon(
               selected ? Icons.check_circle : Icons.radio_button_off,
-              color: selected ? _primaryBlue : Colors.grey,
+              color: selected ? _istcViolet : Colors.grey,
             ),
             const SizedBox(width: 15),
             Expanded(
@@ -290,7 +290,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
                 ],
               ),
             ),
-            Icon(icon, color: selected ? _primaryBlue : Colors.grey.shade400),
+            Icon(icon, color: selected ? _istcViolet : Colors.grey.shade400),
           ],
         ),
       ),
@@ -319,7 +319,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: _primaryBlue,
+          backgroundColor: _istcViolet,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
@@ -340,7 +340,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 30),
-      color: _darkGreen,
+      color: _istcViolet,
       child: const Column(
         children: [
           CircleAvatar(
@@ -367,20 +367,15 @@ class _MonEspacePageState extends State<MonEspacePage> {
   }
 
   Widget _tabsSection() {
-    return Column(
-      children: [
-        TabBar(
-          isScrollable: true,
-          labelColor: _primaryBlue,
-          indicatorColor: _primaryBlue,
-          tabs: const [
-            Tab(text: "Notes"),
-            Tab(text: "Scolarité"),
-            Tab(text: "Cours"),
-            Tab(text: "Planning"),
-          ],
-        ),
-        const Divider(height: 1),
+    return TabBar(
+      isScrollable: true,
+      labelColor: _istcViolet,
+      indicatorColor: _istcViolet,
+      tabs: const [
+        Tab(text: "Notes"),
+        Tab(text: "Scolarité"),
+        Tab(text: "Cours"),
+        Tab(text: "Planning"),
       ],
     );
   }
@@ -453,7 +448,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
         trailing: Text(
           note,
           style: TextStyle(
-            color: _primaryBlue,
+            color: _istcViolet,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
