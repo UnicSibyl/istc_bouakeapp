@@ -23,7 +23,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    fonts:
+     fonts:
       - family: DM_Sans
         fonts:
           - asset: assets/fonts/DM_Sans-Regular.ttf
