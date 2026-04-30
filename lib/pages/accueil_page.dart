@@ -9,12 +9,11 @@ class AccueilPage extends StatefulWidget {
 }
 
 class _AccueilPageState extends State<AccueilPage> {
-  final PageController _pageController = PageController(viewportFraction: 1.0);
+  final PageController _pageController = PageController();
   int _currentPage = 0;
   Timer? _timer;
-  bool _voirTout = false;
 
-  final List<String> images = [
+  final List<String> sliderImages = [
     'assets/images/slide1.jpg',
     'assets/images/slide2.jpg',
     'assets/images/slide3.jpg',
@@ -23,8 +22,8 @@ class _AccueilPageState extends State<AccueilPage> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      if (_currentPage < images.length - 1) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_currentPage < sliderImages.length - 1) {
         _currentPage++;
       } else {
         _currentPage = 0;
@@ -53,121 +52,33 @@ class _AccueilPageState extends State<AccueilPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. HEADER
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 15, 20, 10),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.home,
-                        color: Color(0xFF1565C0),
-                        size: 22,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        "Accueil",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Syne',
-                          color: Color(0xFF0D1B2A),
-                        ),
-                      ),
-                    ],
-                  ),
+              // HEADER
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Text(
+                  "Accueil",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
 
-              // 2. BIENVENUE
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FA),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(color: Colors.grey.shade200),
-                  ),
-                  child: const Text(
-                    "Bienvenue sur l'application mobile de l'antenne ISTC Polytechnique de Bouaké",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF1565C0),
-                    ),
-                  ),
-                ),
-              ),
-
-              // 3. SLIDER AVEC BLEU ACCENTUÉ
+              // SLIDER
               SizedBox(
-                height: 220,
+                height: 200,
                 child: PageView.builder(
                   controller: _pageController,
-                  itemCount: images.length,
-                  onPageChanged: (int page) =>
-                      setState(() => _currentPage = page),
+                  itemCount: sliderImages.length,
                   itemBuilder: (context, index) {
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 10),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: Stack(
+                          fit: StackFit.expand,
                           children: [
-                            // Image avec filtre bleu pour "sentir" l'opacité
-                            ColorFiltered(
-                              colorFilter: ColorFilter.mode(
-                                const Color(0xFF1565C0).withOpacity(0.3),
-                                BlendMode.darken,
-                              ),
-                              child: Image.asset(
-                                images[index],
-                                fit: BoxFit.cover,
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                            ),
-                            // Dégradé pour accentuer le bleu sur le slider
+                            Image.asset(sliderImages[index], fit: BoxFit.cover),
                             Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    const Color(0xFF1565C0).withOpacity(0.4),
-                                    const Color(
-                                      0xFF1565C0,
-                                    ).withOpacity(0.7), // Bleu plus fort
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 20,
-                              left: 20,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: const Color(0xFF1565C0),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: const Text(
-                                  "Découvrir",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                              ),
+                              color: const Color(0xFF1565C0).withOpacity(0.5),
                             ),
                           ],
                         ),
@@ -177,70 +88,51 @@ class _AccueilPageState extends State<AccueilPage> {
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 20),
 
-              // 4. ZONE NOS FORMATIONS
+              // CONTENU GRIS
               Container(
-                width: double.infinity,
                 decoration: const BoxDecoration(
                   color: Color(0xFFF8F9FA),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 25),
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 20, bottom: 15),
-                      child: Text(
-                        "Nos formations",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                    // SECTION FILIÈRES
+                    _buildTitle("Nos filières", "Tout voir"),
+                    Row(
+                      children: [
+                        // --- ICI : REMPLACE LES CHEMINS PAR TES ICÔNES ---
+                        _buildFiliereCard(
+                          "Arts & Images\nNumériques",
+                          "licence & master",
+                          "assets/icons/art.png",
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Row(
-                        children: [
-                          _buildFormationCard(
-                            "Arts & Images\nNumériques",
-                            "licence & master",
-                            Icons.palette,
-                          ),
-                          _buildFormationCard(
-                            "Publicité\nMarketing",
-                            "licence & master",
-                            Icons.campaign,
-                          ),
-                        ],
-                      ),
+                        _buildFiliereCard(
+                          "Publicité\nMarketing",
+                          "licence & master",
+                          "assets/icons/marketing.png",
+                        ),
+                      ],
                     ),
 
-                    // 5. NEWS & ÉVÉNEMENTS (STYLE MAQUETTE)
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(20, 30, 20, 15),
-                      child: Text(
-                        "News & Événements",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                    const SizedBox(height: 25),
+
+                    // SECTION NEWS
+                    _buildTitle("News & Événements", "Voir plus"),
+                    // --- ICI : REMPLACE LES CHEMINS PAR TES ICÔNES NEWS ---
+                    _buildNewsItem(
+                      "WORKSHOP",
+                      "UI/UX Masterclass",
+                      "12 Oct . Auditorium",
+                      "assets/icons/news1.png",
                     ),
-                    _buildNewsCard(
-                      "Workshop UI/UX Design",
-                      "Formation intensive",
-                      "13 fev. 2026 . Amphi",
-                    ),
-                    _buildNewsCard(
-                      "Conférence Web",
-                      "Séminaire tech",
-                      "20 fev. 2026 . Salle 4",
+                    _buildNewsItem(
+                      "CONFÉRENCE",
+                      "IA & Futur",
+                      "20 Oct . Salle 2",
+                      "assets/icons/news2.png",
                     ),
                   ],
                 ),
@@ -252,88 +144,103 @@ class _AccueilPageState extends State<AccueilPage> {
     );
   }
 
-  Widget _buildFormationCard(String title, String subtitle, IconData icon) {
+  Widget _buildTitle(String title, String action) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            action,
+            style: const TextStyle(
+              color: Color(0xFF1565C0),
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFiliereCard(String title, String sub, String iconPath) {
     return Expanded(
       child: Container(
-        margin: const EdgeInsets.all(8),
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        margin: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
-          ],
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
         ),
         child: Column(
           children: [
-            Icon(icon, size: 35, color: const Color(0xFF1565C0)),
+            Image.asset(
+              iconPath,
+              width: 40,
+              height: 40,
+              errorBuilder: (c, e, s) => const Icon(Icons.image),
+            ),
             const SizedBox(height: 10),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                height: 1.2,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
             ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
-            ),
+            Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 10)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNewsCard(String title, String category, String details) {
+  Widget _buildNewsItem(String cat, String title, String info, String imgPath) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFF1F4F8),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade100),
       ),
       child: Row(
         children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.asset(
+              imgPath,
+              width: 50,
+              height: 50,
+              fit: BoxFit.cover,
+              errorBuilder: (c, e, s) => const Icon(Icons.event),
             ),
-            child: const Icon(Icons.event_note, color: Color(0xFF1565C0)),
           ),
-          const SizedBox(width: 15),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  cat,
                   style: const TextStyle(
                     color: Color(0xFF1565C0),
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  title,
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
-                  category,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  details,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
+                  info,
+                  style: const TextStyle(color: Colors.grey, fontSize: 11),
                 ),
               ],
             ),

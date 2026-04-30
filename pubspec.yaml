@@ -1,5 +1,5 @@
 name: istc_bouakeapp
-description: "A new Flutter project."
+description: "Application mobile de l'ISTC Polytechnique Bouaké"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -23,10 +23,11 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-     fonts:
-      - family: DM_Sans
-        fonts:
-          - asset: assets/fonts/DM_Sans-Regular.ttf
-          - asset: assets/fonts/DM_Sans-Medium.ttf
-          - asset: assets/fonts/DM_Sans-SemiBold.ttf
-          - asset: assets/fonts/DM_Sans-Bold.ttf
+
+  fonts:
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DM_Sans-Regular.ttf
+        - asset: assets/fonts/DM_Sans-Medium.ttf
+        - asset: assets/fonts/DM_Sans-SemiBold.ttf
+        - asset: assets/fonts/DM_Sans-Bold.ttf
