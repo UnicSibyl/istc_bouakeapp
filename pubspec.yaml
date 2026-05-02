@@ -27,19 +27,9 @@ flutter:
   fonts:
     - family: DMSans
       fonts:
-        - asset: assets/fonts/DMSans_18pt-Black.ttf
-        - asset: assets/fonts/DMSans_18pt-BlackItalic.ttf
+        - asset: assets/fonts/DMSans_18pt-Regular.ttf
+        - asset: assets/fonts/DMSans_18pt-Medium.ttf
         - asset: assets/fonts/DMSans_18pt-SemiBold.ttf
         - asset: assets/fonts/DMSans_18pt-Bold.ttf
-        - asset: assets/fonts/DMSans_18pt-BoldItalic.ttf
         - asset: assets/fonts/DMSans_18pt-Italic.ttf
-        - asset: assets/fonts/DMSans_18pt-Regular.ttf
-        - asset: assets/fonts/DMSans_18pt-ExtraLightItalic.ttf
-        - asset: assets/fonts/DMSans_18pt-ExtraLight.ttf
-        - asset: assets/fonts/DMSans_18pt-Light.ttf
-        - asset: assets/fonts/DMSans_18pt-LightItalic.ttf
-        - asset: assets/fonts/DMSans_18pt-Medium.ttf
-        - asset: assets/fonts/DMSans_18pt-MediumItalic.ttf
-        - asset: assets/fonts/DMSans_18pt-Regular.ttf
-        - asset: assets/fonts/DMSans_18pt-SemiBold.ttf
-        - asset: assets/fonts/DMSans_18pt-SemiBoldItalic.ttf
+          style: italic
