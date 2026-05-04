@@ -13,9 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ISTC Polytechnique Bouaké',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
+      theme: ThemeData(useMaterial3: true),
       home: const MainNavigator(),
     );
   }
@@ -33,10 +31,10 @@ class _MainNavigatorState extends State<MainNavigator> {
 
   final List<Widget> _pages = [
     const AccueilPage(),
-    const Scaffold(body: Center(child: Text("Découvrir"))),
-    const Scaffold(body: Center(child: Text("Mon Espace"))),
-    const Scaffold(body: Center(child: Text("Le Réseau"))),
-    const Scaffold(body: Center(child: Text("Réglages"))),
+    const Scaffold(body: Center(child: Text("Page Découvrir"))),
+    const Scaffold(body: Center(child: Text("Page Mon Espace"))),
+    const Scaffold(body: Center(child: Text("Page Le Réseau"))),
+    const Scaffold(body: Center(child: Text("Page Réglages"))),
   ];
 
   @override
@@ -46,9 +44,9 @@ class _MainNavigatorState extends State<MainNavigator> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: const Color(0xFF1A1F26), // Fond sombre maquette
-        selectedItemColor: const Color(0xFFF5720A), // Orange pour l'actif
-        unselectedItemColor: Colors.white54, // Blanc tamisé pour les autres
+        backgroundColor: const Color(0xFF102A43), // Bleu nuit au lieu de noir
+        selectedItemColor: const Color(0xFFF5720A), // Orange ISTC
+        unselectedItemColor: Colors.white70,
         selectedFontSize: 12,
         unselectedFontSize: 12,
         onTap: (index) {

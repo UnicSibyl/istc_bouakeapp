@@ -17,13 +17,12 @@ class _AccueilPageState extends State<AccueilPage> {
   @override
   void initState() {
     super.initState();
-    // Transition toutes les 4 secondes
     _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (_pageController.hasClients) {
         _currentPage = (_currentPage + 1) % 3;
         _pageController.animateToPage(
           _currentPage,
-          duration: const Duration(milliseconds: 600), // Plus rapide et fluide
+          duration: const Duration(milliseconds: 600),
           curve: Curves.decelerate,
         );
       }
@@ -40,10 +39,10 @@ class _AccueilPageState extends State<AccueilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F2F5), // Gris léger pour le fond
+      backgroundColor: const Color(0xFFF0F2F5),
       body: Column(
         children: [
-          // Barre de titre "ACCUEIL"
+          // Barre Supérieure Blanche
           Container(
             padding: const EdgeInsets.only(top: 45, bottom: 10),
             color: Colors.white,
@@ -52,11 +51,9 @@ class _AccueilPageState extends State<AccueilPage> {
               children: [
                 Icon(Icons.home, color: Color(0xFFF5720A), size: 20),
                 SizedBox(width: 8),
-                Text(
-                  "ACCUEIL",
-                  style: TextStyle(
-                      color: Color(0xFF1A45A0), fontWeight: FontWeight.bold),
-                ),
+                Text("ACCUEIL",
+                    style: TextStyle(
+                        color: Color(0xFF1A45A0), fontWeight: FontWeight.bold)),
               ],
             ),
           ),
@@ -71,7 +68,7 @@ class _AccueilPageState extends State<AccueilPage> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 25),
                     width: double.infinity,
-                    color: const Color(0xFF1E61ED), // Même bleu que le slider
+                    color: const Color(0xFF1E61ED),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -79,7 +76,7 @@ class _AccueilPageState extends State<AccueilPage> {
                           "Bienvenue sur l'appli de l'antenne ISTC Polytechnique Bouaké",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                          style: TextStyle(color: Colors.white, fontSize: 13),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -111,7 +108,7 @@ class _AccueilPageState extends State<AccueilPage> {
                   _buildSearchBar(),
                   _buildDynamicSlider(),
 
-                  // Statistiques (Compteurs)
+                  // Statistiques
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 15),
@@ -134,10 +131,10 @@ class _AccueilPageState extends State<AccueilPage> {
                       isAction: true,
                       actionText: _isExpanded ? "Masquer" : "Voir plus"),
 
-                  _buildNewsCard("WORKSHOP", "UI/UX Masterclass - Bouaké",
-                      "12 Oct", Icons.brush, Colors.blue),
-                  _buildNewsCard("EXPOSITION", "Digital Arts Showcase 2024",
-                      "5 Nov", Icons.movie, Colors.orange),
+                  _buildNewsCard("WORKSHOP", "UI/UX Masterclass", "12 Oct",
+                      Icons.brush, Colors.blue),
+                  _buildNewsCard("EXPOSITION", "Digital Arts Showcase", "5 Nov",
+                      Icons.movie, Colors.orange),
 
                   if (_isExpanded) ...[
                     _buildNewsCard("SÉMINAIRE", "Intelligence Artificielle",
@@ -153,8 +150,6 @@ class _AccueilPageState extends State<AccueilPage> {
     );
   }
 
-  // --- WIDGETS DE SOUTIEN ---
-
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -168,7 +163,7 @@ class _AccueilPageState extends State<AccueilPage> {
         ),
         child: const TextField(
           decoration: InputDecoration(
-            hintText: "Rechercher formations, news...",
+            hintText: "Rechercher...",
             prefixIcon: Icon(Icons.search, color: Colors.blue),
             border: InputBorder.none,
             contentPadding: EdgeInsets.symmetric(vertical: 15),
@@ -215,13 +210,10 @@ class _AccueilPageState extends State<AccueilPage> {
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold)),
-          const Text("Inscriptions ouvertes jusqu'au 30 sept.",
-              style: TextStyle(color: Colors.white70, fontSize: 12)),
           const Spacer(),
           ElevatedButton(
             onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white24, elevation: 0),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
             child:
                 const Text("Postuler →", style: TextStyle(color: Colors.white)),
           ),
@@ -235,7 +227,8 @@ class _AccueilPageState extends State<AccueilPage> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
-        color: Colors.grey[300],
+        color: const Color(
+            0xFFF0F2F5), // Fond neutre pour éviter le noir au chargement
         image: DecorationImage(
             image: AssetImage(path), fit: BoxFit.cover, onError: (_, __) {}),
       ),
@@ -243,8 +236,10 @@ class _AccueilPageState extends State<AccueilPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
           gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              colors: [Colors.black.withOpacity(0.5), Colors.transparent]),
+            begin: Alignment.bottomCenter,
+            end: Alignment.center,
+            colors: [Colors.black.withOpacity(0.4), Colors.transparent],
+          ),
         ),
         padding: const EdgeInsets.all(20),
         alignment: Alignment.bottomLeft,
