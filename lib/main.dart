@@ -14,7 +14,6 @@ class MyApp extends StatelessWidget {
       title: 'ISTC Polytechnique Bouaké',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0D3B8E)),
         useMaterial3: true,
       ),
       home: const MainNavigator(),
@@ -35,8 +34,8 @@ class _MainNavigatorState extends State<MainNavigator> {
   final List<Widget> _pages = [
     const AccueilPage(),
     const Scaffold(body: Center(child: Text("Découvrir"))),
-    const Scaffold(body: Center(child: Text("Espace Étudiant"))),
-    const Scaffold(body: Center(child: Text("Réseau"))),
+    const Scaffold(body: Center(child: Text("Mon Espace"))),
+    const Scaffold(body: Center(child: Text("Le Réseau"))),
     const Scaffold(body: Center(child: Text("Réglages"))),
   ];
 
@@ -47,24 +46,25 @@ class _MainNavigatorState extends State<MainNavigator> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF0D3B8E),
-        unselectedItemColor: Colors.grey,
+        backgroundColor: const Color(0xFF1A1F26), // Fond sombre maquette
+        selectedItemColor: const Color(0xFFF5720A), // Orange pour l'actif
+        unselectedItemColor: Colors.white54, // Blanc tamisé pour les autres
+        selectedFontSize: 12,
+        unselectedFontSize: 12,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          setState(() => _currentIndex = index);
         },
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded), label: "Accueil"),
+              icon: Icon(Icons.home_filled), label: "Accueil"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.explore_rounded), label: "Découvrir"),
+              icon: Icon(Icons.explore), label: "Découvrir"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded), label: "Espace"),
+              icon: Icon(Icons.person), label: "Mon Espace"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.hub_rounded), label: "Réseau"),
+              icon: Icon(Icons.language), label: "Le Réseau"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.settings_rounded), label: "Réglages"),
+              icon: Icon(Icons.settings), label: "Réglages"),
         ],
       ),
     );

@@ -11,22 +11,20 @@ class AccueilPage extends StatefulWidget {
 class _AccueilPageState extends State<AccueilPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  bool _isExpanded = false; // Pour afficher/masquer les news
+  bool _isExpanded = false;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    // Slider automatique entre 3 et 7 secondes (ici 5s)
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    // Transition toutes les 4 secondes
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (_pageController.hasClients) {
-        setState(() {
-          _currentPage = (_currentPage + 1) % 3; // 3 pages au total
-        });
+        _currentPage = (_currentPage + 1) % 3;
         _pageController.animateToPage(
           _currentPage,
-          duration: const Duration(milliseconds: 800),
-          curve: Curves.easeInOut,
+          duration: const Duration(milliseconds: 600), // Plus rapide et fluide
+          curve: Curves.decelerate,
         );
       }
     });
@@ -42,26 +40,22 @@ class _AccueilPageState extends State<AccueilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Gris léger pour le fond pour faire ressortir les cartes blanches
-      backgroundColor: const Color(0xFFF0F2F5),
+      backgroundColor: const Color(0xFFF0F2F5), // Gris léger pour le fond
       body: Column(
         children: [
-          // --- BARRE ACCUEIL TOUT EN HAUT ---
+          // Barre de titre "ACCUEIL"
           Container(
-            padding: const EdgeInsets.only(top: 40, bottom: 10),
+            padding: const EdgeInsets.only(top: 45, bottom: 10),
             color: Colors.white,
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.home, color: Colors.orange, size: 20),
+                Icon(Icons.home, color: Color(0xFFF5720A), size: 20),
                 SizedBox(width: 8),
                 Text(
                   "ACCUEIL",
                   style: TextStyle(
-                    color: Color(0xFF1A45A0),
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                  ),
+                      color: Color(0xFF1A45A0), fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -74,19 +68,27 @@ class _AccueilPageState extends State<AccueilPage> {
                 children: [
                   // --- HEADER BLEU ---
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 25),
                     width: double.infinity,
-                    color: const Color(0xFF1A45A0),
+                    color: const Color(0xFF1E61ED), // Même bleu que le slider
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text(
+                          "Bienvenue sur l'appli de l'antenne ISTC Polytechnique Bouaké",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        ),
+                        const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             RichText(
                               text: const TextSpan(
                                 style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.bold),
+                                    fontSize: 26, fontWeight: FontWeight.bold),
                                 children: [
                                   TextSpan(
                                       text: "ISTC ",
@@ -102,25 +104,14 @@ class _AccueilPageState extends State<AccueilPage> {
                                 color: Color(0xFFF5720A), size: 30),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Bienvenue sur l'appli de l'antenne ISTC Polytechnique Bouaké",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500),
-                        ),
                       ],
                     ),
                   ),
 
-                  // --- RECHERCHE ---
                   _buildSearchBar(),
-
-                  // --- SLIDER DYNAMIQUE ---
                   _buildDynamicSlider(),
 
-                  // --- STATISTIQUES (AVEC CONTOUR GRIS) ---
+                  // Statistiques (Compteurs)
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 15),
@@ -134,53 +125,25 @@ class _AccueilPageState extends State<AccueilPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
-
-                  // --- NOS FORMATIONS ---
                   _buildSectionHeader("Nos formations"),
-                  const SizedBox(height: 15), // Espace ajouté ici
-                  SizedBox(
-                    height: 200,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.only(left: 20),
-                      children: [
-                        _buildFormationCard(
-                            "Arts & Images\nNumériques",
-                            "Licence • Master",
-                            "8 modules",
-                            Icons.palette,
-                            const Color(0xFF4181F6)),
-                        _buildFormationCard(
-                            "Publicité Marketing",
-                            "Licence • Master",
-                            "7 modules",
-                            Icons.campaign,
-                            const Color(0xFFD6730E)),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(height: 15),
+                  _buildFormationsList(),
 
-                  // --- NEWS & ÉVÉNEMENTS ---
                   _buildSectionHeader("News & Événements",
                       onTap: () => setState(() => _isExpanded = !_isExpanded),
                       isAction: true,
                       actionText: _isExpanded ? "Masquer" : "Voir plus"),
 
                   _buildNewsCard("WORKSHOP", "UI/UX Masterclass - Bouaké",
-                      "12 Oct - Auditorium", Icons.brush, Colors.blue),
+                      "12 Oct", Icons.brush, Colors.blue),
                   _buildNewsCard("EXPOSITION", "Digital Arts Showcase 2024",
-                      "5 Nov - Galerie ISTC", Icons.movie, Colors.orange),
+                      "5 Nov", Icons.movie, Colors.orange),
 
-                  // News supplémentaires qui s'affichent au clic
                   if (_isExpanded) ...[
                     _buildNewsCard("SÉMINAIRE", "Intelligence Artificielle",
-                        "15 Nov - Salle 1", Icons.psychology, Colors.green),
-                    _buildNewsCard("SPORT", "Tournoi Inter-Écoles",
-                        "20 Nov - Terrain", Icons.sports_soccer, Colors.red),
+                        "15 Nov", Icons.psychology, Colors.green),
                   ],
-
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -189,6 +152,8 @@ class _AccueilPageState extends State<AccueilPage> {
       ),
     );
   }
+
+  // --- WIDGETS DE SOUTIEN ---
 
   Widget _buildSearchBar() {
     return Padding(
@@ -218,13 +183,9 @@ class _AccueilPageState extends State<AccueilPage> {
       height: 200,
       child: PageView(
         controller: _pageController,
-        onPageChanged: (index) => setState(() => _currentPage = index),
         children: [
-          // Slide 1: Annonce Rentrée
           _buildTextSlide(),
-          // Slide 2: Image (à remplacer par tes assets)
           _buildImageSlide("assets/images/slide1.jpg", "Nos infrastructures"),
-          // Slide 3: Image
           _buildImageSlide("assets/images/slide2.jpg", "Vie étudiante"),
         ],
       ),
@@ -274,7 +235,7 @@ class _AccueilPageState extends State<AccueilPage> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25),
-        color: Colors.grey,
+        color: Colors.grey[300],
         image: DecorationImage(
             image: AssetImage(path), fit: BoxFit.cover, onError: (_, __) {}),
       ),
@@ -283,7 +244,7 @@ class _AccueilPageState extends State<AccueilPage> {
           borderRadius: BorderRadius.circular(25),
           gradient: LinearGradient(
               begin: Alignment.bottomCenter,
-              colors: [Colors.black.withOpacity(0.6), Colors.transparent]),
+              colors: [Colors.black.withOpacity(0.5), Colors.transparent]),
         ),
         padding: const EdgeInsets.all(20),
         alignment: Alignment.bottomLeft,
@@ -301,8 +262,7 @@ class _AccueilPageState extends State<AccueilPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
-        // Contour léger pour bien séparer du fond gris
-        border: Border.all(color: Colors.grey.withOpacity(0.3), width: 1),
+        border: Border.all(color: Colors.grey.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -310,7 +270,7 @@ class _AccueilPageState extends State<AccueilPage> {
               style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1A45A0))),
+                  color: Color(0xFF1E61ED))),
           Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
@@ -322,21 +282,36 @@ class _AccueilPageState extends State<AccueilPage> {
       bool isAction = false,
       String actionText = "Tout voir"}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title,
               style:
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          GestureDetector(
-            onTap: onTap,
-            child: Text(actionText,
-                style: const TextStyle(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14)),
-          ),
+          if (isAction)
+            GestureDetector(
+              onTap: onTap,
+              child: Text(actionText,
+                  style: const TextStyle(
+                      color: Colors.orange, fontWeight: FontWeight.bold)),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFormationsList() {
+    return SizedBox(
+      height: 180,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.only(left: 20),
+        children: [
+          _buildFormationCard("Arts & Images\nNumériques", "Licence • Master",
+              "8 modules", Icons.palette, const Color(0xFF1E61ED)),
+          _buildFormationCard("Publicité Marketing", "Licence • Master",
+              "7 modules", Icons.campaign, const Color(0xFFD6730E)),
         ],
       ),
     );
