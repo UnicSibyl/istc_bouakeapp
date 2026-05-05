@@ -34,7 +34,7 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
   @override
   void initState() {
     super.initState();
-    // Timing de 6 secondes pour les citations
+    // Timing de 4 secondes pour les citations
     _quoteTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (mounted) {
         setState(() {
