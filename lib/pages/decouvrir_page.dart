@@ -12,9 +12,9 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
   String _selectedFilter = "Tout";
   int _currentQuoteIndex = 0;
   Timer? _quoteTimer;
-  String? _expandedGalleryItem;
+  String? _expandedInfo;
+  String? _activeSchool;
 
-  // Liste des témoignages pour l'animation automatique
   final List<Map<String, String>> _quotes = [
     {
       "text":
@@ -34,7 +34,7 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
   @override
   void initState() {
     super.initState();
-    // Change la citation toutes les 4 secondes
+    // Timing de 6 secondes pour les citations
     _quoteTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
       if (mounted) {
         setState(() {
@@ -56,9 +56,7 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
       backgroundColor: const Color(0xFFF8FAFC),
       body: Column(
         children: [
-          // --- Header Vert (Identité ISTC) ---
           _buildHeader(),
-
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
@@ -67,58 +65,11 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-
-                  // --- Barre de Filtres Coulissante ---
                   _buildFilterBar(),
-
                   const SizedBox(height: 25),
-
-                  // --- Liste de cartes dynamiques ---
-                  if (_selectedFilter == "Tout" ||
-                      _selectedFilter == "Événements")
-                    _buildContentCard(
-                      "WORKSHOP",
-                      "UI/UX Masterclass • Bouaké",
-                      "Auditorium • 60 places",
-                      "12 Oct 2024",
-                      const Color(0xFF1A45A0),
-                      Icons.palette_rounded,
-                    ),
-
-                  if (_selectedFilter == "Tout" ||
-                      _selectedFilter == "Formations")
-                    _buildContentCard(
-                      "CONFÉRENCE",
-                      "Marketing Digital en Côte d'Ivoire",
-                      "Amphi A • 100 places",
-                      "28 Oct 2024",
-                      const Color(0xFF107C41),
-                      Icons.campaign_rounded,
-                    ),
-
+                  _buildMainContent(),
                   const SizedBox(height: 30),
-
-                  // --- Section Galerie ---
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text("Galerie",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      TextButton(
-                          onPressed: () {},
-                          child: const Text("Voir tout",
-                              style: TextStyle(color: Colors.orange))),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  _buildGallerySection(),
-
-                  const SizedBox(height: 30),
-
-                  // --- Témoignages (Citations animées) ---
                   _buildTestimonialSection(),
-
                   const SizedBox(height: 40),
                 ],
               ),
@@ -129,55 +80,246 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
     );
   }
 
+  Widget _buildMainContent() {
+    switch (_selectedFilter) {
+      case "Débouchés":
+        return _buildDebouchesContent();
+      case "Événements":
+        return _buildEvenementsContent();
+      case "Formations":
+        return _buildFormationsContent();
+      case "Vie Étudiante":
+        return _buildVieEtudianteContent();
+      case "Concours":
+        return _buildConcoursContent();
+      default:
+        return _buildToutContent();
+    }
+  }
+
+  // --- SECTION TOUT ---
+  Widget _buildToutContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text("Métiers & Perspectives",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            TextButton(
+              onPressed: () => setState(() => _selectedFilter = "Débouchés"),
+              child: const Text("Voir tout",
+                  style: TextStyle(color: Colors.orange)),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+        _buildGalleryGrid([
+          _infoIcon(
+              "Motion Design",
+              Icons.movie_filter,
+              const Color(0xFFF5720A),
+              "Création de graphismes animés pour la TV et le web. (Arts & Images Numériques)"),
+          _infoIcon("Chef de Pub", Icons.campaign, const Color(0xFF1A45A0),
+              "Responsable de la stratégie publicitaire entre annonceur et agence. (Publicité Marketing)"),
+          _infoIcon("UI Designer", Icons.ads_click, const Color(0xFF107C41),
+              "Conception d'interfaces mobiles esthétiques et fonctionnelles. (Arts & Images Numériques)"),
+        ]),
+        const SizedBox(height: 25),
+        _buildContentCard("ACTU", "Nouveaux équipements", "Bouaké",
+            "Disponible", const Color(0xFF107C41), Icons.computer),
+      ],
+    );
+  }
+
+  // --- SECTION DÉBOUCHÉS ---
+  Widget _buildDebouchesContent() {
+    return Column(
+      children: [
+        _buildSchoolAccordion("Arts et Images Numériques", [
+          _infoIcon("Réalisateur", Icons.videocam, Colors.black,
+              "Direction des productions audiovisuelles et scénarios. (Arts & Images Numériques)"),
+          _infoIcon("Infographiste", Icons.brush, Colors.blue,
+              "Créateur de visuels print et digitaux (Adobe). (Arts & Images Numériques)"),
+          _infoIcon("Photographe", Icons.camera_alt, Colors.orange,
+              "Expert prise de vue studio et reportage. (Arts & Images Numériques)"),
+          _infoIcon("Monteur Vidéo", Icons.content_cut, Colors.red,
+              "Assemblage rythmé des images et du son. (Arts & Images Numériques)"),
+          _infoIcon("Webmaster", Icons.language, Colors.teal,
+              "Gestionnaire technique des plateformes web. (Arts & Images Numériques)"),
+        ]),
+        const SizedBox(height: 15),
+        _buildSchoolAccordion("Publicité Marketing", [
+          _infoIcon("Media Planner", Icons.calendar_month, Colors.indigo,
+              "Planification des supports de diffusion pub. (Publicité Marketing)"),
+          _infoIcon("Analyste", Icons.bar_chart, Colors.green,
+              "Étude des tendances de consommation. (Publicité Marketing)"),
+          _infoIcon("Copywriter", Icons.edit_note, Colors.brown,
+              "Concepteur de slogans et textes persuasifs. (Publicité Marketing)"),
+          _infoIcon("Brand Manager", Icons.stars, Colors.amber,
+              "Garant de l'identité d'une marque. (Publicité Marketing)"),
+        ]),
+      ],
+    );
+  }
+
+  // --- SECTION FORMATIONS (SANS GALERIE) ---
+  Widget _buildFormationsContent() {
+    return Column(
+      children: [
+        _buildSchoolAccordion("École Arts & Images Numériques", null,
+            extraInfo:
+                "Cycles Licence & Master. Spécialités : Montage, VFX, Dessin académique, Esthétique de l'image."),
+        const SizedBox(height: 10),
+        _buildSchoolAccordion("École Publicité Marketing", null,
+            extraInfo:
+                "Cycles Licence & Master. Spécialités : Marketing Digital, Droit de la pub, Stratégie Média."),
+      ],
+    );
+  }
+
+  // --- SECTION ÉVÉNEMENTS ---
+  Widget _buildEvenementsContent() {
+    return Column(
+      children: [
+        _buildContentCard("WORKSHOP", "Masterclass Montage", "Salle Mac",
+            "12 Mai", const Color(0xFF1A45A0), Icons.movie),
+        _buildContentCard("CONFÉRENCE", "Marketing 2026", "Amphi A", "18 Mai",
+            const Color(0xFF107C41), Icons.mic),
+      ],
+    );
+  }
+
+  // --- SECTION VIE ÉTUDIANTE ---
+  Widget _buildVieEtudianteContent() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(20)),
+      child: const Text(
+        "L'antenne de l'ISTC Polytechnique Bouaké offre un cadre chaleureux. Entre clubs photo et tournois sportifs, l'expérience est unique.",
+        textAlign: TextAlign.center,
+        style: TextStyle(color: Colors.black54, height: 1.5),
+      ),
+    );
+  }
+
+  // --- SECTION CONCOURS ---
+  Widget _buildConcoursContent() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.orange.withOpacity(0.3))),
+      child: const Text(
+          "• Accès par concours direct.\n• Épreuves : Culture Générale, Spécialité et Entretien."),
+    );
+  }
+
+  // --- COMPOSANTS RÉUTILISABLES ---
+  Widget _buildSchoolAccordion(String title, List<Widget>? icons,
+      {String? extraInfo}) {
+    bool isOpen = _activeSchool == title;
+    return GestureDetector(
+      onTap: () => setState(() => _activeSchool = isOpen ? null : title),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)
+            ]),
+        child: Column(
+          children: [
+            Row(children: [
+              const Icon(Icons.school, color: Color(0xFF107C41)),
+              const SizedBox(width: 15),
+              Expanded(
+                  child: Text(title,
+                      style: const TextStyle(fontWeight: FontWeight.bold))),
+              Icon(isOpen ? Icons.expand_less : Icons.expand_more),
+            ]),
+            if (isOpen) ...[
+              const Divider(height: 25),
+              if (icons != null) _buildGalleryGrid(icons),
+              if (extraInfo != null)
+                Text(extraInfo,
+                    style: const TextStyle(fontSize: 13, height: 1.5)),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGalleryGrid(List<Widget> items) =>
+      Wrap(spacing: 15, runSpacing: 15, children: items);
+
+  Widget _infoIcon(String label, IconData icon, Color color, String desc) {
+    bool isSelected = _expandedInfo == desc;
+    return GestureDetector(
+      onTap: () => setState(() => _expandedInfo = isSelected ? null : desc),
+      child: Column(
+        children: [
+          Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                  color: color, borderRadius: BorderRadius.circular(15)),
+              child: Icon(icon, color: Colors.white)),
+          const SizedBox(height: 5),
+          SizedBox(
+              width: 70,
+              child: Text(label,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontSize: 10, fontWeight: FontWeight.bold))),
+          if (isSelected)
+            Container(
+              width: 250,
+              margin: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.orange.withOpacity(0.2))),
+              child: Text(desc,
+                  style: const TextStyle(
+                      fontSize: 11, fontStyle: FontStyle.italic)),
+            )
+        ],
+      ),
+    );
+  }
+
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.only(top: 60, left: 25, right: 25, bottom: 30),
       decoration: const BoxDecoration(
-        color: Color(0xFF107C41),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Découvrir",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
-          const Text("Explorez l'univers ISTC Bouaké",
-              style: TextStyle(color: Colors.white70, fontSize: 14)),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(15)),
-            child: const TextField(
-              style: TextStyle(color: Colors.white),
-              decoration: InputDecoration(
-                icon: Icon(Icons.search, color: Colors.white70),
-                hintText: "Rechercher un événement, une actu...",
-                hintStyle: TextStyle(color: Colors.white60, fontSize: 13),
-                border: InputBorder.none,
-              ),
-            ),
-          ),
-        ],
-      ),
+          color: Color(0xFF107C41),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30))),
+      child: const Text("Découvrir\nISTC Polytechnique Bouaké",
+          style: TextStyle(
+              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
     );
   }
 
   Widget _buildFilterBar() {
     final filters = [
       "Tout",
+      "Débouchés",
       "Événements",
       "Formations",
       "Vie Étudiante",
       "Concours"
     ];
     return SizedBox(
-      height: 45,
+      height: 40,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: filters.length,
@@ -185,29 +327,18 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
           bool isSelected = _selectedFilter == filters[index];
           return GestureDetector(
             onTap: () => setState(() => _selectedFilter = filters[index]),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+            child: Container(
               margin: const EdgeInsets.only(right: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFFF5720A) : Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                            color: Colors.orange.withOpacity(0.3),
-                            blurRadius: 8)
-                      ]
-                    : [],
-              ),
+                  color: isSelected ? Colors.orange : Colors.white,
+                  borderRadius: BorderRadius.circular(20)),
               child: Center(
-                child: Text(
-                  filters[index],
-                  style: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black54,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
+                  child: Text(filters[index],
+                      style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black54,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12))),
             ),
           );
         },
@@ -217,188 +348,37 @@ class _DecouvrirPageState extends State<DecouvrirPage> {
 
   Widget _buildContentCard(String tag, String title, String loc, String date,
       Color color, IconData icon) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4))
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            height: 120,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: color,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(20))),
-            child: Icon(icon, color: Colors.white.withOpacity(0.5), size: 60),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(tag,
-                        style: const TextStyle(
-                            color: Color(0xFFF5720A),
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold)),
-                    const Spacer(),
-                    Text(date,
-                        style:
-                            const TextStyle(color: Colors.grey, fontSize: 11)),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 17)),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(Icons.location_on,
-                        size: 14, color: Colors.redAccent),
-                    const SizedBox(width: 5),
-                    Text(loc,
-                        style: const TextStyle(
-                            color: Colors.black54, fontSize: 12)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGallerySection() {
-    return Column(
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _galleryIcon(
-                  "Motion Design",
-                  Icons.draw_rounded,
-                  const Color(0xFFF5720A),
-                  "L'art d'animer des graphismes pour la pub."),
-              _galleryIcon(
-                  "Photo",
-                  Icons.camera_rounded,
-                  const Color(0xFF1A45A0),
-                  "Maîtriser la lumière et la composition."),
-              _galleryIcon(
-                  "Vidéo",
-                  Icons.videocam_rounded,
-                  const Color(0xFF107C41),
-                  "Réalisation de clips et reportages."),
-              _galleryIcon("Stratégie", Icons.insights_rounded, Colors.purple,
-                  "Analyse de marché et plans médias."),
-            ],
-          ),
-        ),
-        if (_expandedGalleryItem != null)
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.only(top: 15),
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.orange.withOpacity(0.1))),
-            child: Text(_expandedGalleryItem!,
-                style: const TextStyle(
-                    fontSize: 13,
-                    fontStyle: FontStyle.italic,
-                    color: Colors.black87)),
-          ),
-      ],
-    );
-  }
-
-  Widget _galleryIcon(String label, IconData icon, Color color, String desc) {
-    bool isSelected = _expandedGalleryItem == desc;
-    return GestureDetector(
-      onTap: () =>
-          setState(() => _expandedGalleryItem = isSelected ? null : desc),
-      child: Container(
-        margin: const EdgeInsets.only(right: 15),
-        child: Column(
-          children: [
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                              color: color.withOpacity(0.4), blurRadius: 10)
-                        ]
-                      : []),
-              child: Icon(icon, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            Text(label,
-                style:
-                    const TextStyle(fontSize: 11, fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
+    return ListTile(
+      leading: CircleAvatar(
+          backgroundColor: color.withOpacity(0.1),
+          child: Icon(icon, color: color, size: 20)),
+      title: Text(title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+      subtitle: Text("$loc • $date", style: const TextStyle(fontSize: 11)),
     );
   }
 
   Widget _buildTestimonialSection() {
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 600),
-      transitionBuilder: (Widget child, Animation<double> animation) {
-        return FadeTransition(opacity: animation, child: child);
-      },
-      child: Container(
-        key: ValueKey<int>(_currentQuoteIndex),
-        width: double.infinity,
-        padding: const EdgeInsets.all(25),
-        decoration: BoxDecoration(
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
           color: const Color(0xFF102A43),
-          borderRadius: BorderRadius.circular(25),
-        ),
-        child: Column(
-          children: [
-            const Icon(Icons.format_quote_rounded,
-                color: Color(0xFFF5720A), size: 40),
-            const SizedBox(height: 10),
-            Text(
-              _quotes[_currentQuoteIndex]["text"]!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontStyle: FontStyle.italic,
-                  height: 1.5),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              _quotes[_currentQuoteIndex]["author"]!,
-              style: const TextStyle(
-                  color: Color(0xFFF5720A),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13),
-            ),
-          ],
-        ),
-      ),
+          borderRadius: BorderRadius.circular(20)),
+      child: Column(children: [
+        const Icon(Icons.format_quote, color: Colors.orange, size: 30),
+        Text(_quotes[_currentQuoteIndex]["text"]!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontStyle: FontStyle.italic)),
+        const SizedBox(height: 10),
+        Text(_quotes[_currentQuoteIndex]["author"]!,
+            style: const TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 11)),
+      ]),
     );
   }
 }

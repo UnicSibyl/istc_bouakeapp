@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/accueil_page.dart';
 import 'pages/le_reseau_page.dart';
-import 'pages/decouvrir_page.dart'; // Import important !
+import 'pages/decouvrir_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green, // Couleur institutionnelle
       ),
       home: const MainNavigator(),
     );
@@ -32,11 +32,11 @@ class MainNavigator extends StatefulWidget {
 }
 
 class _MainNavigatorState extends State<MainNavigator> {
-  int _currentIndex = 1; // On démarre sur "Découvrir" pour voir tes modifs
+  int _currentIndex = 1; // On démarre sur "Découvrir" pour tes tests
 
   final List<Widget> _pages = [
     const AccueilPage(),
-    const DecouvrirPage(), // Ta nouvelle page dynamique
+    const DecouvrirPage(),
     const Scaffold(body: Center(child: Text("Page Mon Espace"))),
     const LeReseauPage(),
     const Scaffold(body: Center(child: Text("Page Réglages"))),
@@ -46,7 +46,6 @@ class _MainNavigatorState extends State<MainNavigator> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
-        // IndexedStack garde l'état des pages quand on change d'onglet
         index: _currentIndex,
         children: _pages,
       ),
@@ -59,7 +58,9 @@ class _MainNavigatorState extends State<MainNavigator> {
         selectedFontSize: 12,
         unselectedFontSize: 12,
         onTap: (index) {
-          setState(() => _currentIndex = index);
+          setState(() {
+            _currentIndex = index;
+          });
         },
         items: const [
           BottomNavigationBarItem(
