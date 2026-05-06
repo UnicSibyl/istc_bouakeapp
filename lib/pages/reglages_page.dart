@@ -1,208 +1,234 @@
 import 'package:flutter/material.dart';
 
-class ReglagesPage extends StatelessWidget {
-  const ReglagesPage({super.key});
+class ReglagesPage extends StatefulWidget {
+  final Function(bool) onThemeToggle;
+  final VoidCallback onLogout;
 
-  // Couleurs de la charte graphique
-  final Color _istcViolet = const Color(0xFF6A1B9A);
-  final Color _textGrey = const Color(0xFF718096);
-  final Color _bgLight = const Color(0xFFF7F9FC);
+  const ReglagesPage(
+      {super.key, required this.onThemeToggle, required this.onLogout});
+
+  @override
+  State<ReglagesPage> createState() => _ReglagesPageState();
+}
+
+class _ReglagesPageState extends State<ReglagesPage> {
+  // États des boutons switch
+  bool _pushEnabled = true;
+  bool _deadlinesEnabled = true;
+  bool _darkMode = false;
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:
+          isDark ? const Color(0xFF121212) : const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
+        title: const Text("RÉGLAGES",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         centerTitle: true,
-        leading: const Icon(
-          Icons.settings_outlined,
-          color: Color(0xFF6A1B9A),
-          size: 20,
-        ),
-        title: const Text(
-          "RÉGLAGES",
-          style: TextStyle(
-            color: Color(0xFF2D3748),
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-            fontSize: 16,
-          ),
-        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- SECTION PROFIL ---
-            _buildProfileCard(),
+            // --- SECTION PROFIL (Aminata Koné) ---
+            _buildProfileHeader(context),
 
             const SizedBox(height: 25),
             _sectionTitle("NOTIFICATIONS"),
-            _buildSettingItem(
-              Icons.notifications_none,
-              "Alertes push",
-              trailingText: "Activé",
-              isSwitch: false,
-            ),
-            _buildSettingItem(
-              Icons.calendar_today_outlined,
-              "Rappels deadlines",
-              trailingText: "Activé",
-              isSwitch: false,
-            ),
+            _buildSwitchItem(Icons.notifications_active, "Alertes push",
+                _pushEnabled, (val) => setState(() => _pushEnabled = val)),
+            _buildSwitchItem(
+                Icons.calendar_month,
+                "Rappels deadlines",
+                _deadlinesEnabled,
+                (val) => setState(() => _deadlinesEnabled = val)),
 
             const SizedBox(height: 25),
             _sectionTitle("INFORMATIONS"),
-            _buildSettingItem(
-              Icons.location_on_outlined,
-              "Contact & localisation",
-              showChevron: true,
-            ),
-            _buildSettingItem(
-              Icons.school_outlined,
-              "À propos de l'ISTC",
-              showChevron: true,
-            ),
-            _buildSettingItem(
-              Icons.link,
-              "ISTC Polytechnique Abidjan",
-              showChevron: true,
-            ),
+            _buildSimpleItem(Icons.location_on, "Contact & Localisation", () {
+              _showLocationDialog(context);
+            }),
+            _buildSimpleItem(
+                Icons.school, "À propos de l'antenne ISTC Bouaké", () {}),
+            _buildSimpleItem(Icons.link, "ISTC Polytechnique Abidjan", () {}),
 
             const SizedBox(height: 25),
             _sectionTitle("COMPTE"),
-            _buildLogoutItem(),
-            const SizedBox(height: 30),
+            _buildSwitchItem(Icons.dark_mode, "Mode sombre", _darkMode, (val) {
+              setState(() => _darkMode = val);
+              widget.onThemeToggle(val);
+            }),
+            _buildLogoutButton(context),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  // --- WIDGETS DE CONSTRUCTION ---
+  // --- WIDGETS ---
 
   Widget _sectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 5, bottom: 10),
-      child: Text(
-        title,
-        style: TextStyle(
-          color: _textGrey,
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
-        ),
-      ),
+      padding: const EdgeInsets.only(left: 10, bottom: 10),
+      child: Text(title,
+          style: const TextStyle(
+              fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
     );
   }
 
-  Widget _buildProfileCard() {
+  Widget _buildProfileHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+            colors: [Color(0xFF102A43), Color(0xFF1A45A0)]),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade100),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: _bgLight,
-            child: Icon(Icons.person, color: _istcViolet, size: 30),
+          const CircleAvatar(
+            radius: 35,
+            backgroundColor: Colors.orange,
+            child: Icon(Icons.person, size: 40, color: Colors.white),
           ),
           const SizedBox(width: 15),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Mon Profil",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-                ),
-                Text(
-                  "Voir & modifier mes infos",
-                  style: TextStyle(color: _textGrey, fontSize: 13),
-                ),
+                Text("Aminata Koné",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold)),
+                Text("Étudiante • Arts & Images L2",
+                    style: TextStyle(color: Colors.white70, fontSize: 13)),
               ],
             ),
           ),
-          Icon(Icons.chevron_right, color: Colors.grey.shade400),
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white24, elevation: 0),
+            child: const Text("Modifier",
+                style: TextStyle(color: Colors.white, fontSize: 12)),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildSettingItem(
-    IconData icon,
-    String title, {
-    String? trailingText,
-    bool showChevron = false,
-    bool isSwitch = false,
-  }) {
-    return Container(
+  Widget _buildSwitchItem(
+      IconData icon, String title, bool value, Function(bool) onChanged) {
+    return Card(
+      elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade100),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        leading: Icon(icon, color: Colors.orangeAccent, size: 22),
-        title: Text(
-          title,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
-        ),
+        leading: Icon(icon, color: value ? Colors.orange : Colors.grey),
+        title: Text(title,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (trailingText != null)
-              Text(
-                trailingText,
-                style: const TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            if (showChevron)
-              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+            Text(value ? "Activé" : "Désactivé",
+                style: TextStyle(
+                    color: value ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12)),
+            Switch(
+                value: value, activeColor: Colors.green, onChanged: onChanged),
           ],
         ),
-        onTap: () {},
       ),
     );
   }
 
-  Widget _buildLogoutItem() {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF5F5), // Fond très légèrement rouge
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.red.shade50),
-      ),
+  Widget _buildSimpleItem(IconData icon, String title, VoidCallback onTap) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.only(bottom: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        leading: const Icon(Icons.logout, color: Colors.redAccent),
-        title: const Text(
-          "Se déconnecter",
-          style: TextStyle(
-            color: Colors.redAccent,
-            fontWeight: FontWeight.bold,
-          ),
+        leading: Icon(icon, color: Colors.blueGrey),
+        title: Text(title, style: const TextStyle(fontSize: 14)),
+        trailing: const Icon(Icons.chevron_right, size: 18),
+        onTap: onTap,
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return InkWell(
+      onTap: () => _showLogoutDialog(context),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(15)),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.logout, color: Colors.red),
+            SizedBox(width: 10),
+            Text("Se déconnecter",
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ],
         ),
-        onTap: () {
-          // Logique de déconnexion
-        },
+      ),
+    );
+  }
+
+  void _showLocationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Contacts & Localisation"),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+                leading: Icon(Icons.phone), title: Text("+225 07 00 00 00 00")),
+            ListTile(
+                leading: Icon(Icons.location_on, color: Colors.red),
+                title: Text("Campus de Bouaké")),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Fermer"))
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Déconnexion"),
+        content: const Text("Voulez-vous vraiment vous déconnecter ?"),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Annuler")),
+          TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                widget.onLogout();
+              },
+              child: const Text("Oui, me déconnecter",
+                  style: TextStyle(color: Colors.red))),
+        ],
       ),
     );
   }
