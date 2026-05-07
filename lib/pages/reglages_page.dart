@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 
 class ReglagesPage extends StatefulWidget {
   final Function(bool) onThemeToggle;
-  final VoidCallback onLogout;
 
-  const ReglagesPage(
-      {super.key, required this.onThemeToggle, required this.onLogout});
+  const ReglagesPage({super.key, required this.onThemeToggle});
 
   @override
   State<ReglagesPage> createState() => _ReglagesPageState();
 }
 
 class _ReglagesPageState extends State<ReglagesPage> {
-  // États des boutons switch
   bool _pushEnabled = true;
   bool _deadlinesEnabled = true;
   bool _darkMode = false;
@@ -36,9 +33,7 @@ class _ReglagesPageState extends State<ReglagesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- SECTION PROFIL (Aminata Koné) ---
-            _buildProfileHeader(context),
-
+            _buildProfileHeader(),
             const SizedBox(height: 25),
             _sectionTitle("NOTIFICATIONS"),
             _buildSwitchItem(Icons.notifications_active, "Alertes push",
@@ -48,31 +43,25 @@ class _ReglagesPageState extends State<ReglagesPage> {
                 "Rappels deadlines",
                 _deadlinesEnabled,
                 (val) => setState(() => _deadlinesEnabled = val)),
-
             const SizedBox(height: 25),
             _sectionTitle("INFORMATIONS"),
-            _buildSimpleItem(Icons.location_on, "Contact & Localisation", () {
-              _showLocationDialog(context);
-            }),
+            _buildSimpleItem(Icons.location_on, "Contact & Localisation",
+                () => _showLocationDialog(context)),
             _buildSimpleItem(
                 Icons.school, "À propos de l'antenne ISTC Bouaké", () {}),
             _buildSimpleItem(Icons.link, "ISTC Polytechnique Abidjan", () {}),
-
             const SizedBox(height: 25),
             _sectionTitle("COMPTE"),
             _buildSwitchItem(Icons.dark_mode, "Mode sombre", _darkMode, (val) {
               setState(() => _darkMode = val);
               widget.onThemeToggle(val);
             }),
-            _buildLogoutButton(context),
             const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
-
-  // --- WIDGETS ---
 
   Widget _sectionTitle(String title) {
     return Padding(
@@ -83,7 +72,7 @@ class _ReglagesPageState extends State<ReglagesPage> {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context) {
+  Widget _buildProfileHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -94,10 +83,9 @@ class _ReglagesPageState extends State<ReglagesPage> {
       child: Row(
         children: [
           const CircleAvatar(
-            radius: 35,
-            backgroundColor: Colors.orange,
-            child: Icon(Icons.person, size: 40, color: Colors.white),
-          ),
+              radius: 35,
+              backgroundColor: Colors.orange,
+              child: Icon(Icons.person, size: 40, color: Colors.white)),
           const SizedBox(width: 15),
           const Expanded(
             child: Column(
@@ -114,12 +102,8 @@ class _ReglagesPageState extends State<ReglagesPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white24, elevation: 0),
-            child: const Text("Modifier",
-                style: TextStyle(color: Colors.white, fontSize: 12)),
-          )
+              onPressed: () {},
+              child: const Text("Modifier", style: TextStyle(fontSize: 12)))
         ],
       ),
     );
@@ -130,23 +114,11 @@ class _ReglagesPageState extends State<ReglagesPage> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         leading: Icon(icon, color: value ? Colors.orange : Colors.grey),
-        title: Text(title,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(value ? "Activé" : "Désactivé",
-                style: TextStyle(
-                    color: value ? Colors.green : Colors.red,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12)),
-            Switch(
-                value: value, activeColor: Colors.green, onChanged: onChanged),
-          ],
-        ),
+        title: Text(title, style: const TextStyle(fontSize: 14)),
+        trailing: Switch(
+            value: value, activeColor: Colors.green, onChanged: onChanged),
       ),
     );
   }
@@ -155,7 +127,6 @@ class _ReglagesPageState extends State<ReglagesPage> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: ListTile(
         leading: Icon(icon, color: Colors.blueGrey),
         title: Text(title, style: const TextStyle(fontSize: 14)),
@@ -165,69 +136,16 @@ class _ReglagesPageState extends State<ReglagesPage> {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
-    return InkWell(
-      onTap: () => _showLogoutDialog(context),
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(15)),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.logout, color: Colors.red),
-            SizedBox(width: 10),
-            Text("Se déconnecter",
-                style:
-                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _showLocationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Contacts & Localisation"),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-                leading: Icon(Icons.phone), title: Text("+225 07 00 00 00 00")),
-            ListTile(
-                leading: Icon(Icons.location_on, color: Colors.red),
-                title: Text("Campus de Bouaké")),
-          ],
-        ),
+        content: const Text("Campus de Bouaké\nContact: +225 07 00 00 00 00"),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text("Fermer"))
-        ],
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Déconnexion"),
-        content: const Text("Voulez-vous vraiment vous déconnecter ?"),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Annuler")),
-          TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                widget.onLogout();
-              },
-              child: const Text("Oui, me déconnecter",
-                  style: TextStyle(color: Colors.red))),
         ],
       ),
     );
