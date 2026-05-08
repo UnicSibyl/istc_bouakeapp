@@ -3,6 +3,7 @@ import 'pages/accueil_page.dart';
 import 'pages/le_reseau_page.dart';
 import 'pages/decouvrir_page.dart';
 import 'pages/reglages_page.dart';
+import 'pages/mon_espace_page.dart'; // Importation de la nouvelle page
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blue,
         brightness: Brightness.light,
       ),
       darkTheme: ThemeData(
@@ -54,14 +55,14 @@ class MainNavigator extends StatefulWidget {
 }
 
 class _MainNavigatorState extends State<MainNavigator> {
-  int _currentIndex = 4; // On reste sur Réglages pour tes tests
+  int _currentIndex = 2; // On démarre sur "Mon Espace" pour tes tests
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> pages = [
       const AccueilPage(),
       const DecouvrirPage(),
-      const Scaffold(body: Center(child: Text("Page Mon Espace"))),
+      const MonEspacePage(), // Ta nouvelle page interactive
       const LeReseauPage(),
       ReglagesPage(onThemeToggle: widget.onThemeChanged),
     ];

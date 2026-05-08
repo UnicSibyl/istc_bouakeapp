@@ -9,76 +9,50 @@ class MonEspacePage extends StatefulWidget {
 
 class _MonEspacePageState extends State<MonEspacePage> {
   // --- ÉTATS ---
-  String? role;
-  bool isLogged = false;
+  int _screenIndex = 0; // 0: Rôle, 1: Login, 2: Dashboard
+  String _selectedRole = "";
 
-  // --- COULEURS DU DESIGN ---
-  final Color _primaryBlue = const Color(0xFF1557B0);
-  final Color _darkGreen = const Color(0xFF2E7D32);
-  final Color _istcViolet = const Color(0xFF1557B0); // Votre violet
-  final Color _bgLightBlue = const Color(0xFFEFF6FF);
-  final Color _borderBlue = const Color(0xFF90CDF4);
-  final Color _infoYellow = const Color(0xFFFFF9E6);
-  final Color _infoBorder = const Color(0xFFFFE58F);
+  // --- DESIGN ---
+  final Color _istcViolet =
+      const Color(0xFF1A45A0); // Ton violet institutionnel
+  final Color _istcOrange = const Color(0xFFF5720A);
+  final Color _istcDarkBlue = const Color(0xFF102A43);
 
   @override
   Widget build(BuildContext context) {
-    // Navigation conditionnelle selon l'état
-    if (role == null) return _buildRoleSelection();
-    if (!isLogged) return _buildLogin();
-    return _buildStudentSpace();
+    if (_screenIndex == 0) return _buildRoleSelection();
+    if (_screenIndex == 1) return _buildLogin();
+    return _buildStudentDashboard();
   }
 
-  // --- 1. ÉCRAN : SÉLECTION DU PROFIL ---
+  // --- 1. SÉLECTION DU RÔLE ---
   Widget _buildRoleSelection() {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _customAppBar("MON ESPACE"), // Utilisation de la fonction propre
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+          title: const Text("MON ESPACE • RÔLE",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+          centerTitle: true),
+      body: Padding(
+        padding: const EdgeInsets.all(25.0),
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const Icon(Icons.school, size: 80, color: Color(0xFFFFB74D)),
-            const SizedBox(height: 24),
-            const Text(
-              "Bienvenue",
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1A202C),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Sélectionnez votre profil pour continuer",
-              style: TextStyle(color: Colors.grey),
-            ),
+            _buildIconContainer(Icons.group, _istcViolet),
+            const SizedBox(height: 20),
+            const Text("Mon Espace",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text("Sélectionnez votre profil pour continuer",
+                style: TextStyle(color: Colors.grey)),
             const SizedBox(height: 40),
-            _roleCard(
-              "Je suis étudiant(e)",
-              "Accès à mes cours & notes",
-              "etudiant",
-              Icons.school_outlined,
-            ),
-            const SizedBox(height: 16),
-            _roleCard(
-              "Je suis professeur(e)",
-              "Gestion des cours & classes",
-              "prof",
-              Icons.psychology_outlined,
-            ),
-            const SizedBox(height: 40),
+            _roleOption("Je suis étudiant(e)", "Accès à mes cours & notes",
+                "student", Icons.school_outlined),
+            const SizedBox(height: 15),
+            _roleOption("Je suis professeur(e)", "Gestion des cours & classes",
+                "prof", Icons.psychology_outlined),
+            const Spacer(),
             _largeButton("Continuer →", () {
-              if (role != null) {
-                setState(() {});
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Veuillez sélectionner un profil"),
-                  ),
-                );
-              }
+              if (_selectedRole == "student") setState(() => _screenIndex = 1);
             }),
           ],
         ),
@@ -86,104 +60,125 @@ class _MonEspacePageState extends State<MonEspacePage> {
     );
   }
 
-  // --- 2. ÉCRAN : LOGIN ---
+  // --- 2. LOGIN FICTIF ---
   Widget _buildLogin() {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: _customAppBar(
-        "CONNEXION",
-        onBack: () => setState(() => role = null),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 40),
-              decoration: BoxDecoration(
-                color: _istcViolet, // Passage au violet pour la cohérence
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(30),
-                ),
-              ),
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 35,
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => setState(() => _screenIndex = 0))),
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 40),
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: _istcViolet,
+                borderRadius:
+                    const BorderRadius.vertical(bottom: Radius.circular(30))),
+            child: Column(
+              children: [
+                const CircleAvatar(
+                    radius: 40,
                     backgroundColor: Colors.white24,
-                    child: Icon(Icons.person, color: Colors.white, size: 40),
-                  ),
-                  const SizedBox(height: 15),
-                  Text(
-                    role == "etudiant"
-                        ? "Espace Étudiant"
-                        : "Espace Professeur",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  const Text(
-                    "Entrez vos identifiants ISTC",
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                ],
-              ),
+                    child: Icon(Icons.person, color: Colors.white, size: 40)),
+                const SizedBox(height: 10),
+                const Text("Espace Étudiant",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold)),
+                const Text("Connectez-vous pour accéder à votre espace",
+                    style: TextStyle(color: Colors.white70, fontSize: 13)),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Identifiant",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  _customTextField("ex : istc-bke-0042", false),
-                  const SizedBox(height: 20),
-                  const Text(
-                    "Mot de passe",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  _customTextField("••••••••", true),
-                  const SizedBox(height: 30),
-                  _largeButton(
-                    "Se connecter",
-                    () => setState(() => isLogged = true),
-                  ),
-                  const SizedBox(height: 25),
-                  _infoBox(),
-                ],
-              ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("LOGIN",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 8),
+                const TextField(
+                    decoration: InputDecoration(
+                        hintText: "ex : istc-bke-0042",
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))))),
+                const SizedBox(height: 15),
+                const Text("MOT DE PASSE",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 8),
+                const TextField(
+                    decoration: InputDecoration(
+                        hintText: "••••••••",
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15)))),
+                    obscureText: true),
+                const SizedBox(height: 30),
+                _largeButtonWithIcon("Se connecter", Icons.lock_open,
+                    () => setState(() => _screenIndex = 2)),
+                const SizedBox(height: 20),
+                _infoBox(
+                    "Vos identifiants sont fournis par l'administration de l'ISTC Bouaké."),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  // --- 3. ÉCRAN : ESPACE ÉTUDIANT ---
-  Widget _buildStudentSpace() {
+  // --- 3. DASHBOARD ÉTUDIANT ---
+  Widget _buildStudentDashboard() {
     return DefaultTabController(
-      length: 4,
+      length: 5, // Tabs normaux
       child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: _customAppBar(
-          "TABLEAU DE BORD",
-          onBack: () => setState(() => isLogged = false),
+        backgroundColor: const Color(0xFFF8FAFC),
+        appBar: AppBar(
+          backgroundColor: _istcViolet,
+          foregroundColor: Colors.white,
+          leading: const Icon(Icons.school),
+          title: const Text("Aminata Koné", style: TextStyle(fontSize: 16)),
+          actions: [
+            IconButton(
+                icon: const Icon(Icons.logout),
+                onPressed: () => setState(() => _screenIndex = 0))
+          ],
+          bottom: const TabBar(
+            isScrollable: true,
+            indicatorColor: Colors.orange,
+            labelColor: Colors.orange,
+            unselectedLabelColor: Colors.white70,
+            tabs: [
+              Tab(text: "Notes"),
+              Tab(text: "Scolarité"),
+              Tab(text: "Cours"),
+              Tab(text: "Planning"),
+              Tab(text: "Mémoires"),
+            ],
+          ),
         ),
         body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              _headerStudent(),
-              _tabsSection(),
-              _statusCard(),
+              _profileHeader(), // Icône, matricule, école
+              const SizedBox(height: 20),
+              _statHeader(),
+              const SizedBox(height: 20),
               _notesSection(),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
+              _toolsSection(), // Mes Outils
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -191,58 +186,36 @@ class _MonEspacePageState extends State<MonEspacePage> {
     );
   }
 
-  // --- COMPOSANTS RÉUTILISABLES NETTOYÉS ---
+  // --- COMPOSANTS ---
 
-  PreferredSizeWidget _customAppBar(String title, {VoidCallback? onBack}) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-      leading: onBack != null
-          ? IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                color: Colors.black,
-                size: 20,
-              ),
-              onPressed: onBack,
-            )
-          : null,
-      title: Text(
-        title,
-        style: TextStyle(
-          color: _istcViolet,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.2,
-          fontSize: 16,
-        ),
-      ),
-    );
-  }
-
-  // ... (Gardez vos autres méthodes _infoBox, _roleCard, etc. telles quelles) ...
-  // Mais assurez-vous qu'elles sont bien EN DEHORS des méthodes build.
-
-  Widget _infoBox() {
+  Widget _profileHeader() {
     return Container(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _infoYellow,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _infoBorder),
-      ),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+          ]),
       child: const Row(
         children: [
-          Icon(Icons.info_outline, color: Colors.orange, size: 20),
-          SizedBox(width: 12),
+          CircleAvatar(
+              radius: 35,
+              backgroundColor: Colors.orange,
+              child: Icon(Icons.person, size: 40, color: Colors.white)),
+          SizedBox(width: 15),
           Expanded(
-            child: Text(
-              "Vos identifiants sont fournis par l'administration.",
-              style: TextStyle(
-                color: Colors.orange,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Aminata Koné",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Arts & Images Numériques — L2",
+                    style: TextStyle(color: Colors.grey, fontSize: 13)),
+                Text("Matricule : ISTC-BKE-0042",
+                    style: TextStyle(color: Colors.grey, fontSize: 13)),
+              ],
             ),
           ),
         ],
@@ -250,209 +223,204 @@ class _MonEspacePageState extends State<MonEspacePage> {
     );
   }
 
-  Widget _roleCard(String title, String sub, String val, IconData icon) {
-    bool selected = role == val;
-    return GestureDetector(
-      onTap: () => setState(() => role = val),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: selected ? _bgLightBlue : const Color(0xFFF7F8FA),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? _borderBlue : const Color(0xFFE2E8F0),
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Row(
+  Widget _toolsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text("Mes outils",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 15),
+        GridView.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          childAspectRatio: 1.5,
           children: [
-            Icon(
-              selected ? Icons.check_circle : Icons.radio_button_off,
-              color: selected ? _istcViolet : Colors.grey,
-            ),
-            const SizedBox(width: 15),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    sub,
-                    style: const TextStyle(color: Colors.grey, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-            Icon(icon, color: selected ? _istcViolet : Colors.grey.shade400),
+            _toolItem("Mes Mémoires", "Dépôt & suivi TFE", Icons.picture_as_pdf,
+                Colors.blue),
+            _toolItem("Apprendre +", "Ressources extras", Icons.library_books,
+                Colors.green),
+            _toolItem("Mon Planning", "Cours & examens", Icons.calendar_month,
+                Colors.orange),
+            _toolItem("Certificats", "Télécharger mes docs", Icons.emoji_events,
+                Colors.purple),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _customTextField(String hint, bool isPassword) {
-    return TextField(
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        hintText: hint,
-        filled: true,
-        fillColor: const Color(0xFFF7F8FA),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _largeButton(String label, VoidCallback onPressed) {
-    return SizedBox(
-      width: double.infinity,
-      height: 55,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _istcViolet,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _headerStudent() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 30),
-      color: _istcViolet,
-      child: const Column(
-        children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.white24,
-            child: Icon(Icons.person, size: 45, color: Colors.white),
-          ),
-          SizedBox(height: 15),
-          Text(
-            "Aminata Koné",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            "L2 — Arts & Images Numériques",
-            style: TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _tabsSection() {
-    return TabBar(
-      isScrollable: true,
-      labelColor: _istcViolet,
-      indicatorColor: _istcViolet,
-      tabs: const [
-        Tab(text: "Notes"),
-        Tab(text: "Scolarité"),
-        Tab(text: "Cours"),
-        Tab(text: "Planning"),
       ],
     );
   }
 
-  Widget _statusCard() {
+  Widget _toolItem(String title, String desc, IconData icon, Color color) {
     return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F5E9),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Row(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: color.withOpacity(0.3))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 40),
-          const SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "Modules validés",
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "4 / 6",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: _darkGreen,
-                ),
-              ),
-            ],
-          ),
+          Icon(icon, color: color, size: 20),
+          const SizedBox(height: 8),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          Text(desc,
+              style: const TextStyle(fontSize: 10, color: Colors.black54)),
         ],
       ),
+    );
+  }
+
+  Widget _buildIconContainer(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration:
+          BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
+      child: Icon(icon, color: color, size: 40),
+    );
+  }
+
+  Widget _roleOption(String title, String sub, String val, IconData icon) {
+    bool isSelected = _selectedRole == val;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedRole = val),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.grey[100],
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+                color: isSelected ? Colors.blue : Colors.transparent)),
+        child: Row(
+          children: [
+            Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
+            const SizedBox(width: 15),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(title,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(sub,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                ])),
+            Radio(
+                value: val,
+                groupValue: _selectedRole,
+                onChanged: (v) => setState(() => _selectedRole = v.toString())),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _largeButton(String label, VoidCallback onTap) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: _istcViolet,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15))),
+          child: Text(label)),
+    );
+  }
+
+  Widget _largeButtonWithIcon(String label, IconData icon, VoidCallback onTap) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton.icon(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+              backgroundColor: _istcOrange,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15))),
+          icon: Icon(icon),
+          label: Text(label)),
+    );
+  }
+
+  Widget _infoBox(String text) {
+    return Container(
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+          color: Colors.orange.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.orange.withOpacity(0.3))),
+      child: Row(children: [
+        const Icon(Icons.info_outline, color: Colors.orange, size: 20),
+        const SizedBox(width: 12),
+        Expanded(
+            child: Text(text,
+                style: const TextStyle(color: Colors.orange, fontSize: 12))),
+      ]),
+    );
+  }
+
+  Widget _statHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _statBox("4/6", "Modules validés", Colors.green),
+        _statBox("14.2", "Moy. générale", Colors.orange),
+        _statBox("92%", "Assiduité", Colors.blue),
+      ],
+    );
+  }
+
+  Widget _statBox(String val, String label, Color color) {
+    return Container(
+      width: 100,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(children: [
+        Text(val,
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 18, color: color)),
+        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
+      ]),
     );
   }
 
   Widget _notesSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "Notes récentes",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 15),
-          _noteItem("Motion Design", "16/20"),
-          _noteItem("Photo Numérique", "13/20"),
-          _noteItem("Design Graphique", "15/20"),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          const Text("Notes récentes",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          TextButton(
+              onPressed: () {},
+              child: const Text("Tout voir",
+                  style: TextStyle(color: Colors.orange))),
+        ]),
+        _noteTile("Motion Design", "16/20"),
+        _noteTile("Publicité Digitale", "13/20"),
+      ],
     );
   }
 
-  Widget _noteItem(String title, String note) {
+  Widget _noteTile(String title, String note) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      elevation: 0,
-      color: const Color(0xFFF7F9FC),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(top: 10),
       child: ListTile(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: const Text("Semestre 1"),
-        trailing: Text(
-          note,
-          style: TextStyle(
-            color: _istcViolet,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
+        title: Text(title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        trailing: Text(note,
+            style: TextStyle(fontWeight: FontWeight.bold, color: _istcViolet)),
+        subtitle: const Text("Validé",
+            style: TextStyle(color: Colors.green, fontSize: 11)),
       ),
     );
   }
