@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class MonEspacePage extends StatefulWidget {
   const MonEspacePage({super.key});
@@ -8,15 +9,12 @@ class MonEspacePage extends StatefulWidget {
 }
 
 class _MonEspacePageState extends State<MonEspacePage> {
-  // --- ÉTATS ---
   int _screenIndex = 0; // 0: Rôle, 1: Login, 2: Dashboard
   String _selectedRole = "";
+  bool _showWelcome = true;
 
-  // --- DESIGN ---
-  final Color _istcViolet =
-      const Color(0xFF1A45A0); // Ton violet institutionnel
+  final Color _istcBlue = const Color(0xFF1A45A0);
   final Color _istcOrange = const Color(0xFFF5720A);
-  final Color _istcDarkBlue = const Color(0xFF102A43);
 
   @override
   Widget build(BuildContext context) {
@@ -25,129 +23,123 @@ class _MonEspacePageState extends State<MonEspacePage> {
     return _buildStudentDashboard();
   }
 
-  // --- 1. SÉLECTION DU RÔLE ---
+  // --- 1. SÉLECTION DU RÔLE (Fidèle à la maquette) ---
   Widget _buildRoleSelection() {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: _istcBlue,
       appBar: AppBar(
-          title: const Text("MON ESPACE • RÔLE",
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-          centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(25.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            _buildIconContainer(Icons.group, _istcViolet),
-            const SizedBox(height: 20),
-            const Text("Mon Espace",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            const Text("Sélectionnez votre profil pour continuer",
-                style: TextStyle(color: Colors.grey)),
-            const SizedBox(height: 40),
-            _roleOption("Je suis étudiant(e)", "Accès à mes cours & notes",
-                "student", Icons.school_outlined),
-            const SizedBox(height: 15),
-            _roleOption("Je suis professeur(e)", "Gestion des cours & classes",
-                "prof", Icons.psychology_outlined),
-            const Spacer(),
-            _largeButton("Continuer →", () {
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        title: Text("MON ESPACE • RÔLE",
+            style: TextStyle(
+                color: _istcBlue, fontSize: 14, fontWeight: FontWeight.bold)),
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 40),
+          Center(child: _buildIconCircle(Icons.school, Colors.white, 40)),
+          const SizedBox(height: 20),
+          const Text("Mon Espace",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold)),
+          const Text("Sélectionnez votre profil pour continuer",
+              style: TextStyle(color: Colors.white70)),
+          const SizedBox(height: 50),
+          _roleCard("Je suis étudiant(e)", "Accès à mes cours & notes",
+              "student", Icons.person),
+          _roleCard("Je suis professeur(e)", "Gestion des cours & classes",
+              "prof", Icons.work_outline),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(25.0),
+            child: _largeBtn("Continuer →", () {
               if (_selectedRole == "student") setState(() => _screenIndex = 1);
             }),
+          )
+        ],
+      ),
+    );
+  }
+
+  // --- 2. LOGIN (Matricule + i + Cadenas) ---
+  Widget _buildLogin() {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF0F2F5),
+      appBar: AppBar(
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
+              onPressed: () => setState(() => _screenIndex = 0))),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 40),
+              width: double.infinity,
+              color: _istcBlue,
+              child: Column(
+                children: [
+                  const CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.white24,
+                      child: Icon(Icons.person, color: Colors.white, size: 40)),
+                  const SizedBox(height: 15),
+                  const Text("Espace Étudiant",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold)),
+                  const Text("Connectez-vous pour accéder à votre espace",
+                      style: TextStyle(color: Colors.white70)),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("MATRICULE",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  const SizedBox(height: 8),
+                  _input("ex : istc-bke-0042", Icons.badge_outlined),
+                  const SizedBox(height: 20),
+                  const Text("MOT DE PASSE",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  const SizedBox(height: 8),
+                  _input("••••••••", Icons.lock_outline, obscure: true),
+                  const SizedBox(height: 30),
+                  _largeBtnWithIcon("Se connecter", Icons.lock, () {
+                    setState(() => _screenIndex = 2);
+                    Timer(const Duration(seconds: 7), () {
+                      if (mounted) setState(() => _showWelcome = false);
+                    });
+                  }),
+                  const SizedBox(height: 20),
+                  _infoBox(
+                      "Vos identifiants sont fournis par l'administration de l'ISTC Bouaké."),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  // --- 2. LOGIN FICTIF ---
-  Widget _buildLogin() {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-          leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => setState(() => _screenIndex = 0))),
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 40),
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: _istcViolet,
-                borderRadius:
-                    const BorderRadius.vertical(bottom: Radius.circular(30))),
-            child: Column(
-              children: [
-                const CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white24,
-                    child: Icon(Icons.person, color: Colors.white, size: 40)),
-                const SizedBox(height: 10),
-                const Text("Espace Étudiant",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold)),
-                const Text("Connectez-vous pour accéder à votre espace",
-                    style: TextStyle(color: Colors.white70, fontSize: 13)),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(25.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("LOGIN",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                const SizedBox(height: 8),
-                const TextField(
-                    decoration: InputDecoration(
-                        hintText: "ex : istc-bke-0042",
-                        prefixIcon: Icon(Icons.person),
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15))))),
-                const SizedBox(height: 15),
-                const Text("MOT DE PASSE",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                const SizedBox(height: 8),
-                const TextField(
-                    decoration: InputDecoration(
-                        hintText: "••••••••",
-                        prefixIcon: Icon(Icons.lock),
-                        border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15)))),
-                    obscureText: true),
-                const SizedBox(height: 30),
-                _largeButtonWithIcon("Se connecter", Icons.lock_open,
-                    () => setState(() => _screenIndex = 2)),
-                const SizedBox(height: 20),
-                _infoBox(
-                    "Vos identifiants sont fournis par l'administration de l'ISTC Bouaké."),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- 3. DASHBOARD ÉTUDIANT ---
+  // --- 3. DASHBOARD ÉTUDIANT (Multi-onglets) ---
   Widget _buildStudentDashboard() {
     return DefaultTabController(
-      length: 5, // Tabs normaux
+      length: 8,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
         appBar: AppBar(
-          backgroundColor: _istcViolet,
+          backgroundColor: _istcBlue,
           foregroundColor: Colors.white,
-          leading: const Icon(Icons.school),
-          title: const Text("Aminata Koné", style: TextStyle(fontSize: 16)),
+          title: const Text("TABLEAU DE BORD",
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           actions: [
             IconButton(
                 icon: const Icon(Icons.logout),
@@ -157,271 +149,340 @@ class _MonEspacePageState extends State<MonEspacePage> {
             isScrollable: true,
             indicatorColor: Colors.orange,
             labelColor: Colors.orange,
-            unselectedLabelColor: Colors.white70,
             tabs: [
               Tab(text: "Notes"),
               Tab(text: "Scolarité"),
               Tab(text: "Cours"),
-              Tab(text: "Planning"),
+              Tab(text: "Stages Internes"),
+              Tab(text: "Emploi du temps"),
               Tab(text: "Mémoires"),
+              Tab(text: "Report d'année"),
+              Tab(text: "Règlement"),
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              _profileHeader(), // Icône, matricule, école
-              const SizedBox(height: 20),
-              _statHeader(),
-              const SizedBox(height: 20),
-              _notesSection(),
-              const SizedBox(height: 20),
-              _toolsSection(), // Mes Outils
-              const SizedBox(height: 40),
-            ],
-          ),
+        body: TabBarView(
+          children: [
+            _viewNotes(),
+            _viewScolarite(),
+            _viewCours(),
+            _viewStages(),
+            _viewEmploiDuTemps(),
+            _viewMemoires(),
+            _viewReport(),
+            _viewReglement(),
+          ],
         ),
       ),
     );
   }
 
-  // --- COMPOSANTS ---
+  // --- LES DIFFÉRENTES VUES (TABS) ---
 
-  Widget _profileHeader() {
+  Widget _viewNotes() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        if (_showWelcome)
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10)),
+            child: const Center(
+                child: Text("👋 Bienvenue Aminata !",
+                    style: TextStyle(
+                        color: Colors.green, fontWeight: FontWeight.bold))),
+          ),
+        _studentInfoCard(),
+        const SizedBox(height: 20),
+        _statHeader(),
+        const SizedBox(height: 25),
+        const Text("Mes outils",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 15),
+        _gridTools(),
+      ],
+    );
+  }
+
+  Widget _viewScolarite() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        _actionCard("Impression de fiches",
+            "Générez vos fiches d'inscription PDF", Icons.print, Colors.blue),
+        _actionCard(
+            "Générer mes avis de recettes",
+            "Activer le lien du 1er versement",
+            Icons.receipt_long,
+            Colors.orange),
+      ],
+    );
+  }
+
+  Widget _viewStages() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text("Stages Internes (Agences-Écoles)",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 15),
+        _schoolExpand("Arts & Images Numériques (AIN)",
+            "L2+M1 : Mini PP (1 mois) | L3+M2 : PP (2 mois)"),
+        _schoolExpand("Publicité Marketing (PUB)",
+            "Organisation en agence avec DG et chefs de départements."),
+      ],
+    );
+  }
+
+  Widget _viewCours() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        _schoolHeader("VOS COURS (AIN)"),
+        _noteItem("Design Graphique", "Lundi 08h"),
+        _noteItem("Motion Design", "Mercredi 10h"),
+        _schoolHeader("COURS PUB (Simulation)"),
+        _noteItem("Stratégie Média", "Indisponible pour votre profil",
+            color: Colors.grey),
+      ],
+    );
+  }
+
+  Widget _viewEmploiDuTemps() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text("Semaine du 12 au 18 Mai",
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        _noteItem("Cours Magistral : Esthétique", "Amphi A - 08:00",
+            color: Colors.blue),
+        _noteItem("Atelier : Montage", "Salle Mac - 14:00",
+            color: Colors.purple),
+      ],
+    );
+  }
+
+  Widget _viewMemoires() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        _memoire("PUB: Le marketing d'influence", "Note: 15/20"),
+        _memoire("AIN: La 3D dans le cinéma", "Note: 16/20"),
+      ],
+    );
+  }
+
+  Widget _viewReport() => const Center(
+      child: Text("Simulation : Demande de report d'année en attente..."));
+  Widget _viewReglement() => const Padding(
+      padding: EdgeInsets.all(20),
+      child: Text("1. Ponctualité... \n2. Tenue correcte..."));
+
+  // --- WIDGETS UTILES ---
+
+  Widget _studentInfoCard() {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
-          ]),
-      child: const Row(
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]),
+      child: Row(
         children: [
-          CircleAvatar(
+          const CircleAvatar(
               radius: 35,
               backgroundColor: Colors.orange,
-              child: Icon(Icons.person, size: 40, color: Colors.white)),
-          SizedBox(width: 15),
+              child: Icon(Icons.person, color: Colors.white, size: 40)),
+          const SizedBox(width: 15),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Aminata Koné",
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                const Text("Aminata Koné",
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("Arts & Images Numériques — L2",
+                const Text("Arts & Images Numériques - L2",
                     style: TextStyle(color: Colors.grey, fontSize: 13)),
-                Text("Matricule : ISTC-BKE-0042",
-                    style: TextStyle(color: Colors.grey, fontSize: 13)),
-              ],
-            ),
-          ),
+                Text("Matricule: ISTC-BKE-0042",
+                    style: TextStyle(
+                        color: _istcBlue,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12)),
+              ]))
         ],
       ),
     );
   }
 
-  Widget _toolsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _gridTools() {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      crossAxisSpacing: 15,
+      mainAxisSpacing: 15,
+      childAspectRatio: 1.3,
       children: [
-        const Text("Mes outils",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 15),
-        GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 1.5,
-          children: [
-            _toolItem("Mes Mémoires", "Dépôt & suivi TFE", Icons.picture_as_pdf,
-                Colors.blue),
-            _toolItem("Apprendre +", "Ressources extras", Icons.library_books,
-                Colors.green),
-            _toolItem("Mon Planning", "Cours & examens", Icons.calendar_month,
-                Colors.orange),
-            _toolItem("Certificats", "Télécharger mes docs", Icons.emoji_events,
-                Colors.purple),
-          ],
-        ),
+        _toolItem(
+            "Mes Mémoires", "Dépôt PDF", Icons.picture_as_pdf, Colors.blue),
+        _toolItem(
+            "Apprendre +", "Ressources", Icons.library_books, Colors.green),
+        _toolItem(
+            "Mon Planning", "Examens", Icons.calendar_today, Colors.orange),
+        _toolItem("Certificats", "Diplômes", Icons.verified, Colors.purple),
       ],
     );
   }
 
-  Widget _toolItem(String title, String desc, IconData icon, Color color) {
+  Widget _toolItem(String t, String s, IconData i, Color c) {
     return Container(
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: color.withOpacity(0.3))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 8),
-          Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-          Text(desc,
-              style: const TextStyle(fontSize: 10, color: Colors.black54)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconContainer(IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(20),
       decoration:
-          BoxDecoration(color: color.withOpacity(0.1), shape: BoxShape.circle),
-      child: Icon(icon, color: color, size: 40),
+          BoxDecoration(color: c, borderRadius: BorderRadius.circular(20)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(i, color: Colors.white, size: 24),
+        const Spacer(),
+        Text(t,
+            style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 13)),
+        Text(s, style: const TextStyle(color: Colors.white70, fontSize: 10)),
+      ]),
     );
   }
 
-  Widget _roleOption(String title, String sub, String val, IconData icon) {
-    bool isSelected = _selectedRole == val;
+  Widget _schoolExpand(String title, String desc) {
+    return ExpansionTile(
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      children: [Padding(padding: const EdgeInsets.all(15), child: Text(desc))],
+    );
+  }
+
+  Widget _actionCard(String t, String s, IconData i, Color c) {
+    return Card(
+        child: ListTile(
+            leading: Icon(i, color: c),
+            title: Text(t),
+            subtitle: Text(s),
+            trailing: const Icon(Icons.chevron_right)));
+  }
+
+  Widget _roleCard(String t, String s, String v, IconData i) {
+    bool sel = _selectedRole == v;
     return GestureDetector(
-      onTap: () => setState(() => _selectedRole = val),
+      onTap: () => setState(() => _selectedRole = v),
       child: Container(
-        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.symmetric(horizontal: 25, vertical: 8),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-            color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.grey[100],
-            borderRadius: BorderRadius.circular(15),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-                color: isSelected ? Colors.blue : Colors.transparent)),
+                color: sel ? _istcOrange : Colors.transparent, width: 2)),
         child: Row(
           children: [
-            Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
+            _buildIconCircle(i, sel ? _istcOrange : Colors.grey, 25),
             const SizedBox(width: 15),
             Expanded(
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                  Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text(sub,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(s,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey))
                 ])),
-            Radio(
-                value: val,
-                groupValue: _selectedRole,
-                onChanged: (v) => setState(() => _selectedRole = v.toString())),
+            if (sel) Icon(Icons.check_circle, color: _istcOrange)
           ],
         ),
       ),
     );
   }
 
-  Widget _largeButton(String label, VoidCallback onTap) {
-    return SizedBox(
+  Widget _buildIconCircle(IconData i, Color c, double s) => Container(
+      padding: const EdgeInsets.all(10),
+      decoration:
+          BoxDecoration(color: c.withOpacity(0.1), shape: BoxShape.circle),
+      child: Icon(i, color: c, size: s));
+  Widget _largeBtn(String l, VoidCallback o) => SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 55,
       child: ElevatedButton(
-          onPressed: onTap,
+          onPressed: o,
           style: ElevatedButton.styleFrom(
-              backgroundColor: _istcViolet,
+              backgroundColor: _istcBlue,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15))),
-          child: Text(label)),
-    );
-  }
-
-  Widget _largeButtonWithIcon(String label, IconData icon, VoidCallback onTap) {
-    return SizedBox(
+          child: Text(l)));
+  Widget _largeBtnWithIcon(String l, IconData i, VoidCallback o) => SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 55,
       child: ElevatedButton.icon(
-          onPressed: onTap,
+          onPressed: o,
           style: ElevatedButton.styleFrom(
               backgroundColor: _istcOrange,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15))),
-          icon: Icon(icon),
-          label: Text(label)),
-    );
-  }
-
-  Widget _infoBox(String text) {
-    return Container(
+          icon: Icon(i),
+          label: Text(l)));
+  Widget _input(String h, IconData i, {bool obscure = false}) => TextField(
+      obscureText: obscure,
+      decoration: InputDecoration(
+          hintText: h,
+          prefixIcon: Icon(i),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: BorderSide.none)));
+  Widget _infoBox(String t) => Container(
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-          color: Colors.orange.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.orange.withOpacity(0.3))),
+          color: Colors.blue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15)),
       child: Row(children: [
-        const Icon(Icons.info_outline, color: Colors.orange, size: 20),
-        const SizedBox(width: 12),
+        const Icon(Icons.info, color: Colors.blue),
+        const SizedBox(width: 10),
         Expanded(
-            child: Text(text,
-                style: const TextStyle(color: Colors.orange, fontSize: 12))),
-      ]),
-    );
-  }
-
-  Widget _statHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _statBox("4/6", "Modules validés", Colors.green),
-        _statBox("14.2", "Moy. générale", Colors.orange),
-        _statBox("92%", "Assiduité", Colors.blue),
-      ],
-    );
-  }
-
-  Widget _statBox(String val, String label, Color color) {
-    return Container(
+            child: Text(t,
+                style: const TextStyle(fontSize: 12, color: Colors.blue)))
+      ]));
+  Widget _statHeader() =>
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        _statBox("4/6", "Modules", Colors.green),
+        _statBox("14.2", "Moyenne", Colors.orange),
+        _statBox("92%", "Présence", Colors.blue)
+      ]);
+  Widget _statBox(String v, String l, Color c) => Container(
       width: 100,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(10)),
+          color: c.withOpacity(0.1), borderRadius: BorderRadius.circular(15)),
       child: Column(children: [
-        Text(val,
-            style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 18, color: color)),
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-      ]),
-    );
-  }
-
-  Widget _notesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text("Notes récentes",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-          TextButton(
-              onPressed: () {},
-              child: const Text("Tout voir",
-                  style: TextStyle(color: Colors.orange))),
-        ]),
-        _noteTile("Motion Design", "16/20"),
-        _noteTile("Publicité Digitale", "13/20"),
-      ],
-    );
-  }
-
-  Widget _noteTile(String title, String note) {
-    return Card(
-      margin: const EdgeInsets.only(top: 10),
+        Text(v,
+            style:
+                TextStyle(fontWeight: FontWeight.bold, color: c, fontSize: 18)),
+        Text(l, style: const TextStyle(fontSize: 10))
+      ]));
+  Widget _noteItem(String t, String s, {Color color = Colors.blue}) => ListTile(
+      title: Text(t, style: const TextStyle(fontWeight: FontWeight.bold)),
+      subtitle: Text(s),
+      leading: Icon(Icons.circle, color: color, size: 12));
+  Widget _schoolHeader(String t) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Text(t,
+          style: const TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.grey)));
+  Widget _memoire(String t, String n) => Card(
       child: ListTile(
-        title: Text(title,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-        trailing: Text(note,
-            style: TextStyle(fontWeight: FontWeight.bold, color: _istcViolet)),
-        subtitle: const Text("Validé",
-            style: TextStyle(color: Colors.green, fontSize: 11)),
-      ),
-    );
-  }
+          leading: const Icon(Icons.picture_as_pdf, color: Colors.red),
+          title: Text(t),
+          trailing: Text(n,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.green))));
 }

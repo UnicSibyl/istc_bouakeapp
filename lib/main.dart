@@ -3,7 +3,7 @@ import 'pages/accueil_page.dart';
 import 'pages/le_reseau_page.dart';
 import 'pages/decouvrir_page.dart';
 import 'pages/reglages_page.dart';
-import 'pages/mon_espace_page.dart'; // Importation de la nouvelle page
+import 'pages/mon_espace_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,8 +32,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        primarySwatch: Colors.blue,
-        brightness: Brightness.light,
+        primaryColor: const Color(0xFF1A45A0),
       ),
       darkTheme: ThemeData(
         useMaterial3: true,
@@ -55,20 +54,20 @@ class MainNavigator extends StatefulWidget {
 }
 
 class _MainNavigatorState extends State<MainNavigator> {
-  int _currentIndex = 2; // On démarre sur "Mon Espace" pour tes tests
+  int _currentIndex = 2; // On démarre sur Mon Espace pour tes tests
+
+  final List<Widget> _pages = [
+    const AccueilPage(),
+    const DecouvrirPage(),
+    const MonEspacePage(),
+    const LeReseauPage(),
+    ReglagesPage(onThemeToggle: widget.onThemeChanged),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> pages = [
-      const AccueilPage(),
-      const DecouvrirPage(),
-      const MonEspacePage(), // Ta nouvelle page interactive
-      const LeReseauPage(),
-      ReglagesPage(onThemeToggle: widget.onThemeChanged),
-    ];
-
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: pages),
+      body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
