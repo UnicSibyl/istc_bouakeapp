@@ -14,7 +14,6 @@ class ReglagesPage extends StatefulWidget {
 }
 
 class _ReglagesPageState extends State<ReglagesPage> {
-  bool _pushEnabled = true;
   late bool _darkMode;
 
   @override
@@ -30,19 +29,12 @@ class _ReglagesPageState extends State<ReglagesPage> {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          const Text("NOTIFICATIONS",
+          const Text("APPARENCE",
               style:
                   TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
           SwitchListTile(
-              title: const Text("Alertes push"),
-              value: _pushEnabled,
-              onChanged: (v) => setState(() => _pushEnabled = v)),
-          const SizedBox(height: 20),
-          const Text("COMPTE",
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-          SwitchListTile(
-            title: const Text("Mode sombre"),
+            title: const Text("Mode Sombre"),
+            secondary: const Icon(Icons.dark_mode),
             value: _darkMode,
             onChanged: (v) {
               setState(() => _darkMode = v);

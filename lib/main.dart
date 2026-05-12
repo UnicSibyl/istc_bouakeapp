@@ -32,8 +32,20 @@ class _MyAppState extends State<MyApp> {
       title: 'ISTC Polytechnique Bouaké',
       theme: ThemeData(
         useMaterial3: true,
+        brightness: Brightness.light,
         primaryColor: const Color(0xFFDA783B),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1A45A0)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1A45A0),
+          brightness: Brightness.light,
+        ),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1A45A0),
+          brightness: Brightness.dark,
+        ),
       ),
       themeMode: _themeMode,
       home: MainNavigator(
@@ -61,19 +73,21 @@ class MainNavigator extends StatefulWidget {
 class _MainNavigatorState extends State<MainNavigator> {
   int _currentIndex = 0;
 
-  // Liste des pages
-  final List<Widget> _pages = [
-    const AccueilPage(),
-    const DecouvrirPage(),
-    const MonEspacePage(), // C'est ici que se trouve ton choix de profil
-    const LeReseauPage(),
-    const ReglagesPage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [
+      const AccueilPage(),
+      const DecouvrirPage(),
+      const MonEspacePage(),
+      const LeReseauPage(),
+      ReglagesPage(
+        onThemeToggle: widget.onThemeChanged,
+        isDarkModeInitial: widget.currentThemeMode == ThemeMode.dark,
+      ),
+    ];
+
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _pages),
+      body: IndexedStack(index: _currentIndex, children: pages),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,

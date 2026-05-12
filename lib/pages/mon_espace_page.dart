@@ -15,7 +15,7 @@ class _MonEspacePageState extends State<MonEspacePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Column(
         children: [
           _buildHeader(),
@@ -59,15 +59,13 @@ class _MonEspacePageState extends State<MonEspacePage> {
         children: [
           Icon(Icons.account_circle, size: 60, color: Colors.white),
           SizedBox(height: 10),
-          Text(
-            "Mon Espace",
-            style: TextStyle(
-                color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            "Sélectionnez votre profil",
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
+          Text("Mon Espace",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold)),
+          Text("Sélectionnez votre profil",
+              style: TextStyle(color: Colors.white, fontSize: 14)),
         ],
       ),
     );
@@ -79,19 +77,22 @@ class _MonEspacePageState extends State<MonEspacePage> {
       required String subtitle,
       required IconData icon}) {
     bool isSelected = _selectedProfile == profileId;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => setState(() => _selectedProfile = profileId),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? Colors.grey[900] : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
               color: isSelected ? _selectionBlue : Colors.black12,
               width: isSelected ? 2.5 : 1),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+            if (!isDark)
+              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
           ],
         ),
         child: Row(
@@ -111,10 +112,13 @@ class _MonEspacePageState extends State<MonEspacePage> {
                   Text(title,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isSelected ? _selectionBlue : Colors.black87)),
+                          color: isSelected
+                              ? _selectionBlue
+                              : (isDark ? Colors.white : Colors.black87))),
                   Text(subtitle,
-                      style:
-                          const TextStyle(color: Colors.black54, fontSize: 12)),
+                      style: TextStyle(
+                          color: isDark ? Colors.white70 : Colors.black54,
+                          fontSize: 12)),
                 ],
               ),
             ),
