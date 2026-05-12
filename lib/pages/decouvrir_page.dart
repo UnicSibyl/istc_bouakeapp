@@ -1,384 +1,195 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-class DecouvrirPage extends StatefulWidget {
-  const DecouvrirPage({super.key});
+class ProfileSelectionPage extends StatefulWidget {
+  const ProfileSelectionPage({super.key});
 
   @override
-  State<DecouvrirPage> createState() => _DecouvrirPageState();
+  State<ProfileSelectionPage> createState() => _ProfileSelectionPageState();
 }
 
-class _DecouvrirPageState extends State<DecouvrirPage> {
-  String _selectedFilter = "Tout";
-  int _currentQuoteIndex = 0;
-  Timer? _quoteTimer;
-  String? _expandedInfo;
-  String? _activeSchool;
+class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
+  // Variable pour stocker le profil sélectionné
+  String? _selectedProfile;
 
-  final List<Map<String, String>> _quotes = [
-    {
-      "text":
-          "L'ISTC m'a donné les outils pour lancer mon agence créative à 23 ans.",
-      "author": "Mariama D. • Promo 2022, Arts & Images"
-    },
-    {
-      "text": "Une formation d'excellence qui lie théorie et pratique réelle.",
-      "author": "Jean-Paul K. • Promo 2021, Publicité"
-    },
-    {
-      "text": "Le campus de Bouaké offre un cadre idéal pour l'apprentissage.",
-      "author": "Saran T. • Licence 3, Marketing"
-    },
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    // Timing de 4 secondes pour les citations
-    _quoteTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (mounted) {
-        setState(() {
-          _currentQuoteIndex = (_currentQuoteIndex + 1) % _quotes.length;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _quoteTimer?.cancel();
-    super.dispose();
-  }
+  // Tes codes couleurs corrigés
+  final Color _istcOrange = const Color(0xFFDA783B); // Ton orange #da783b
+  final Color _selectionBlue = const Color(0xFF1E61ED); // Bleu de sélection
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      // --- FOND DE PAGE BLANC ---
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          _buildHeader(),
+          _buildHeader(), // L'en-tête orange
           Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  _buildFilterBar(),
-                  const SizedBox(height: 25),
-                  _buildMainContent(),
-                  const SizedBox(height: 30),
-                  _buildTestimonialSection(),
-                  const SizedBox(height: 40),
-                ],
+            child: Container(
+              color: Colors.white, // Corps de la page en blanc
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
+                child: Column(
+                  children: [
+                    // Carte Étudiant.e
+                    _buildProfileCard(
+                      profileId: 'etudiant',
+                      title: "Je suis étudiant.e",
+                      subtitle: "Accès à mes cours & notes",
+                      icon: Icons.school_outlined,
+                    ),
+                    const SizedBox(height: 20),
+                    // Carte Professeur.e
+                    _buildProfileCard(
+                      profileId: 'professeur',
+                      title: "Je suis professeur.e",
+                      subtitle: "Gestion des cours & classes",
+                      icon: Icons.psychology_outlined,
+                    ),
+                  ],
+                ),
               ),
             ),
+          ),
+          _buildBottomButton(), // Le bouton en bas
+        ],
+      ),
+    );
+  }
+
+  // --- EN-TÊTE ORANGE (#DA783B) ---
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(top: 70, left: 25, right: 25, bottom: 40),
+      decoration: BoxDecoration(
+        color: _istcOrange, // REMPLACÉ : C'est bien orange maintenant !
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(35)),
+      ),
+      child: const Column(
+        children: [
+          Icon(Icons.account_circle, size: 70, color: Colors.white),
+          SizedBox(height: 15),
+          Text(
+            "Mon Espace",
+            style: TextStyle(
+                color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          Text(
+            "Sélectionnez votre profil pour continuer",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.white, fontSize: 14.5),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMainContent() {
-    switch (_selectedFilter) {
-      case "Débouchés":
-        return _buildDebouchesContent();
-      case "Événements":
-        return _buildEvenementsContent();
-      case "Formations":
-        return _buildFormationsContent();
-      case "Vie Étudiante":
-        return _buildVieEtudianteContent();
-      case "Concours":
-        return _buildConcoursContent();
-      default:
-        return _buildToutContent();
-    }
-  }
+  // --- CARTE DE PROFIL (BORDURE BLEUE SI SÉLECTIONNÉ) ---
+  Widget _buildProfileCard({
+    required String profileId,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    bool isSelected = _selectedProfile == profileId;
 
-  // --- SECTION TOUT ---
-  Widget _buildToutContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("Métiers & Perspectives",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            TextButton(
-              onPressed: () => setState(() => _selectedFilter = "Débouchés"),
-              child: const Text("Voir tout",
-                  style: TextStyle(color: Colors.orange)),
-            ),
-          ],
-        ),
-        const SizedBox(height: 15),
-        _buildGalleryGrid([
-          _infoIcon(
-              "Motion Design",
-              Icons.movie_filter,
-              const Color(0xFFF5720A),
-              "Création de graphismes animés pour la TV et le web. (Arts & Images Numériques)"),
-          _infoIcon("Chef de Pub", Icons.campaign, const Color(0xFF1A45A0),
-              "Responsable de la stratégie publicitaire entre annonceur et agence. (Publicité Marketing)"),
-          _infoIcon("UI Designer", Icons.ads_click, const Color(0xFF107C41),
-              "Conception d'interfaces mobiles esthétiques et fonctionnelles. (Arts & Images Numériques)"),
-        ]),
-        const SizedBox(height: 25),
-        _buildContentCard("ACTU", "Nouveaux équipements", "Bouaké",
-            "Disponible", const Color(0xFF107C41), Icons.computer),
-      ],
-    );
-  }
-
-  // --- SECTION DÉBOUCHÉS ---
-  Widget _buildDebouchesContent() {
-    return Column(
-      children: [
-        _buildSchoolAccordion("Arts et Images Numériques", [
-          _infoIcon("Réalisateur", Icons.videocam, Colors.black,
-              "Direction des productions audiovisuelles et scénarios. (Arts & Images Numériques)"),
-          _infoIcon("Infographiste", Icons.brush, Colors.blue,
-              "Créateur de visuels print et digitaux (Adobe). (Arts & Images Numériques)"),
-          _infoIcon("Photographe", Icons.camera_alt, Colors.orange,
-              "Expert prise de vue studio et reportage. (Arts & Images Numériques)"),
-          _infoIcon("Monteur Vidéo", Icons.content_cut, Colors.red,
-              "Assemblage rythmé des images et du son. (Arts & Images Numériques)"),
-          _infoIcon("Webmaster", Icons.language, Colors.teal,
-              "Gestionnaire technique des plateformes web. (Arts & Images Numériques)"),
-        ]),
-        const SizedBox(height: 15),
-        _buildSchoolAccordion("Publicité Marketing", [
-          _infoIcon("Media Planner", Icons.calendar_month, Colors.indigo,
-              "Planification des supports de diffusion pub. (Publicité Marketing)"),
-          _infoIcon("Analyste", Icons.bar_chart, Colors.green,
-              "Étude des tendances de consommation. (Publicité Marketing)"),
-          _infoIcon("Copywriter", Icons.edit_note, Colors.brown,
-              "Concepteur de slogans et textes persuasifs. (Publicité Marketing)"),
-          _infoIcon("Brand Manager", Icons.stars, Colors.amber,
-              "Garant de l'identité d'une marque. (Publicité Marketing)"),
-        ]),
-      ],
-    );
-  }
-
-  // --- SECTION FORMATIONS (SANS GALERIE) ---
-  Widget _buildFormationsContent() {
-    return Column(
-      children: [
-        _buildSchoolAccordion("École Arts & Images Numériques", null,
-            extraInfo:
-                "Cycles Licence & Master. Spécialités : Montage, VFX, Dessin académique, Esthétique de l'image."),
-        const SizedBox(height: 10),
-        _buildSchoolAccordion("École Publicité Marketing", null,
-            extraInfo:
-                "Cycles Licence & Master. Spécialités : Marketing Digital, Droit de la pub, Stratégie Média."),
-      ],
-    );
-  }
-
-  // --- SECTION ÉVÉNEMENTS ---
-  Widget _buildEvenementsContent() {
-    return Column(
-      children: [
-        _buildContentCard("WORKSHOP", "Masterclass Montage", "Salle Mac",
-            "12 Mai", const Color(0xFF1A45A0), Icons.movie),
-        _buildContentCard("CONFÉRENCE", "Marketing 2026", "Amphi A", "18 Mai",
-            const Color(0xFF107C41), Icons.mic),
-      ],
-    );
-  }
-
-  // --- SECTION VIE ÉTUDIANTE ---
-  Widget _buildVieEtudianteContent() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(20)),
-      child: const Text(
-        "L'antenne de l'ISTC Polytechnique Bouaké offre un cadre chaleureux. Entre clubs photo et tournois sportifs, l'expérience est unique.",
-        textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.black54, height: 1.5),
-      ),
-    );
-  }
-
-  // --- SECTION CONCOURS ---
-  Widget _buildConcoursContent() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
+    return GestureDetector(
+      onTap: () => setState(() => _selectedProfile = profileId),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.orange.withOpacity(0.3))),
-      child: const Text(
-          "• Accès par concours direct.\n• Épreuves : Culture Générale, Spécialité et Entretien."),
-    );
-  }
-
-  // --- COMPOSANTS RÉUTILISABLES ---
-  Widget _buildSchoolAccordion(String title, List<Widget>? icons,
-      {String? extraInfo}) {
-    bool isOpen = _activeSchool == title;
-    return GestureDetector(
-      onTap: () => setState(() => _activeSchool = isOpen ? null : title),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5)
-            ]),
-        child: Column(
+          // --- RECTANGLE DE SÉLECTION BLEU ---
+          border: Border.all(
+            color: isSelected ? _selectionBlue : Colors.black12,
+            width: isSelected ? 2.5 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? _selectionBlue.withOpacity(0.1)
+                  : Colors.black.withOpacity(0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
           children: [
-            Row(children: [
-              const Icon(Icons.school, color: Color(0xFF107C41)),
-              const SizedBox(width: 15),
-              Expanded(
-                  child: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.bold))),
-              Icon(isOpen ? Icons.expand_less : Icons.expand_more),
-            ]),
-            if (isOpen) ...[
-              const Divider(height: 25),
-              if (icons != null) _buildGalleryGrid(icons),
-              if (extraInfo != null)
-                Text(extraInfo,
-                    style: const TextStyle(fontSize: 13, height: 1.5)),
-            ]
+            // Icône qui change de couleur selon la sélection
+            CircleAvatar(
+              radius: 25,
+              backgroundColor: isSelected
+                  ? _selectionBlue.withOpacity(0.1)
+                  : const Color(0xFFF1F5F9),
+              child: Icon(icon,
+                  color: isSelected ? _selectionBlue : Colors.grey, size: 28),
+            ),
+            const SizedBox(width: 15),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: isSelected ? _selectionBlue : Colors.black87),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: Colors.black54, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            // Petit rond de validation bleu
+            Icon(
+              isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: isSelected ? _selectionBlue : Colors.black12,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGalleryGrid(List<Widget> items) =>
-      Wrap(spacing: 15, runSpacing: 15, children: items);
-
-  Widget _infoIcon(String label, IconData icon, Color color, String desc) {
-    bool isSelected = _expandedInfo == desc;
-    return GestureDetector(
-      onTap: () => setState(() => _expandedInfo = isSelected ? null : desc),
-      child: Column(
-        children: [
-          Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                  color: color, borderRadius: BorderRadius.circular(15)),
-              child: Icon(icon, color: Colors.white)),
-          const SizedBox(height: 5),
-          SizedBox(
-              width: 70,
-              child: Text(label,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.bold))),
-          if (isSelected)
-            Container(
-              width: 250,
-              margin: const EdgeInsets.only(top: 10),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.orange.withOpacity(0.2))),
-              child: Text(desc,
-                  style: const TextStyle(
-                      fontSize: 11, fontStyle: FontStyle.italic)),
-            )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader() {
+  // --- BOUTON DE VALIDATION ---
+  Widget _buildBottomButton() {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.only(top: 60, left: 25, right: 25, bottom: 30),
-      decoration: const BoxDecoration(
-          color: Color(0xFF107C41),
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(30))),
-      child: const Text("Découvrir\nISTC Polytechnique Bouaké",
-          style: TextStyle(
-              color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-    );
-  }
-
-  Widget _buildFilterBar() {
-    final filters = [
-      "Tout",
-      "Débouchés",
-      "Événements",
-      "Formations",
-      "Vie Étudiante",
-      "Concours"
-    ];
-    return SizedBox(
-      height: 40,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: filters.length,
-        itemBuilder: (context, index) {
-          bool isSelected = _selectedFilter == filters[index];
-          return GestureDetector(
-            onTap: () => setState(() => _selectedFilter = filters[index]),
-            child: Container(
-              margin: const EdgeInsets.only(right: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              decoration: BoxDecoration(
-                  color: isSelected ? Colors.orange : Colors.white,
-                  borderRadius: BorderRadius.circular(20)),
-              child: Center(
-                  child: Text(filters[index],
-                      style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black54,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12))),
+      padding: const EdgeInsets.all(25),
+      color: Colors.white, // Pied de page en blanc
+      child: SizedBox(
+        width: double.infinity,
+        height: 55,
+        child: ElevatedButton(
+          onPressed: _selectedProfile == null
+              ? null
+              : () {
+                  // Ton action ici
+                },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: _selectionBlue,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
             ),
-          );
-        },
+            disabledBackgroundColor: Colors.grey.shade200,
+          ),
+          child: const Text(
+            "Continuer",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+        ),
       ),
-    );
-  }
-
-  Widget _buildContentCard(String tag, String title, String loc, String date,
-      Color color, IconData icon) {
-    return ListTile(
-      leading: CircleAvatar(
-          backgroundColor: color.withOpacity(0.1),
-          child: Icon(icon, color: color, size: 20)),
-      title: Text(title,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-      subtitle: Text("$loc • $date", style: const TextStyle(fontSize: 11)),
-    );
-  }
-
-  Widget _buildTestimonialSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-          color: const Color(0xFF102A43),
-          borderRadius: BorderRadius.circular(20)),
-      child: Column(children: [
-        const Icon(Icons.format_quote, color: Colors.orange, size: 30),
-        Text(_quotes[_currentQuoteIndex]["text"]!,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontStyle: FontStyle.italic)),
-        const SizedBox(height: 10),
-        Text(_quotes[_currentQuoteIndex]["author"]!,
-            style: const TextStyle(
-                color: Colors.orange,
-                fontWeight: FontWeight.bold,
-                fontSize: 11)),
-      ]),
     );
   }
 }
